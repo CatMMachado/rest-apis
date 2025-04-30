@@ -1,0 +1,203 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Swashbuckle.AspNetCore.Annotations;
+
+namespace MyApi.Controllers;
+
+/// <summary>
+/// Controller for weather forecast operations.
+/// </summary>
+[Authorize(Policy = "ApiScope")]
+[ApiController]
+[Route("weather")]
+public class WeatherForecastController : ControllerBase
+{
+    private static readonly string[] Summaries = new[]
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild",
+        "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    /// <summary>
+    /// Get a public weather forecast.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is accessible without authentication.
+    /// </remarks>
+    /// <returns>A list of weather forecasts.</returns>
+    /// <response code="200">Returns the list of weather forecasts.</response>
+    [HttpGet("public")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetPublic()
+    {
+        var forecast = GenerateForecast();
+        return Ok(forecast);
+    }
+
+    /// <summary>
+    /// Get a private weather forecast.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is protected and requires a valid token with the "api1" scope.
+    /// </remarks>
+    /// <returns>A list of weather forecasts along with user information.</returns>
+    /// <response code="200">Returns the list of weather forecasts and user details.</response>
+    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
+    [HttpGet("private")]
+    [Authorize(Policy = "ApiScope")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult GetPrivate()
+    {
+        var username = User.Identity?.Name ?? "No name provided";
+        var scopes = User.Claims
+                         .Where(c => c.Type == "scope")
+                         .Select(c => c.Value);
+
+        return Ok(new
+        {
+            message = "This endpoint is protected!",
+            user = username,
+            scopes = scopes,
+            forecast = GenerateForecast()
+        });
+    }
+
+    /// <summary>
+    /// [Deprecated] Get a weather forecast (old version).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is deprecated. Please use <c>/weather/public</c> instead.
+    /// </remarks>
+    /// <returns>A list of weather forecasts.</returns>
+    /// <response code="410">Gone - This endpoint is deprecated.</response>
+    [HttpGet("deprecated")]
+    [Obsolete("This endpoint is deprecated. Please use /weather/public instead.")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status410Gone)]
+    public IActionResult GetDeprecated()
+    {
+        return StatusCode(StatusCodes.Status410Gone, new
+        {
+            message = "This endpoint is deprecated. Please use /weather/public instead."
+        });
+    }
+
+    /// <summary>
+    /// Generate a custom weather forecast.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows you to generate a custom weather forecast by providing a summary.
+    /// </remarks>
+    /// <param name="request">The request body containing the custom summary.</param>
+    /// <returns>The generated weather forecast.</returns>
+    /// <response code="200">Returns the generated weather forecast.</response>
+    /// <response code="400">Bad request if the input is invalid.</response>
+    [HttpPost("custom")]
+    [Authorize(Policy = "ApiScope")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public IActionResult GenerateCustomForecast([FromBody] CustomForecastRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Summary))
+        {
+            return BadRequest(new { message = "Summary cannot be empty." });
+        }
+
+        var forecast = new WeatherForecast(
+            DateOnly.FromDateTime(DateTime.Now),
+            Random.Shared.Next(-20, 55),
+            request.Summary
+        );
+
+        return Ok(forecast);
+    }
+
+    /// <summary>
+    /// Delete a weather forecast by ID and date.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint deletes a weather forecast based on the provided ID and date.
+    /// The date must be in the format <c>yyyy-MM-dd</c>.
+    /// Example: <c>/weather/1/2025-04-30</c>.
+    /// </remarks>
+    /// <param name="id">The ID of the weather forecast to delete (must be an integer).</param>
+    /// <param name="date">The date of the weather forecast to delete (format: yyyy-MM-dd).</param>
+    /// <response code="204">No content - The weather forecast was successfully deleted.</response>
+    /// <response code="400">Bad request - The date format is invalid.</response>
+    /// <response code="404">Not found - The weather forecast with the specified ID and date does not exist.</response>
+    [HttpDelete("{id:int}/{date:datetime}")]
+    [Authorize(Policy = "ApiScope")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(
+        Summary = "Delete a weather forecast by ID and date",
+        Description = "Deletes a weather forecast based on the provided ID and date. The date must be in the format yyyy-MM-dd."
+    )]
+    public IActionResult DeleteForecast(
+        [FromRoute, SwaggerParameter(Description = "The ID of the weather forecast to delete (e.g., 1).")]
+        int id,
+
+        [FromRoute, SwaggerParameter(Description = "The date of the weather forecast to delete (format: yyyy-MM-dd, e.g., 2025-04-30).")]
+        DateTime date)
+    {
+        // Validate the date format
+        if (date == default)
+        {
+            return BadRequest(new { message = "Invalid date format. Use yyyy-MM-dd." });
+        }
+
+        // Simulate deletion logic
+        bool forecastExists = id >= 1 && id <= 5; // Example: IDs 1-5 exist
+        if (!forecastExists)
+        {
+            return NotFound(new { message = $"Weather forecast with ID {id} and date {date:yyyy-MM-dd} not found." });
+        }
+
+        // Simulate successful deletion
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Generate a weather forecast for the next 5 days.
+    /// </summary>
+    /// <remarks>
+    /// This method generates a random weather forecast for the next 5 days.
+    /// </remarks>
+    /// <returns>A list of weather forecasts.</returns>
+    private static IEnumerable<WeatherForecast> GenerateForecast()
+    {
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            Summaries[Random.Shared.Next(Summaries.Length)]
+        ))
+        .ToArray();
+    }
+}
+
+/// <summary>
+/// Represents a weather forecast.
+/// </summary>
+public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    /// <summary>
+    /// Gets the temperature in Fahrenheit.
+    /// </summary>
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
+/// <summary>
+/// Request model for generating a custom weather forecast.
+/// </summary>
+public class CustomForecastRequest
+{
+    /// <summary>
+    /// The custom summary for the weather forecast.
+    /// </summary>
+    public string Summary { get; set; } = string.Empty;
+}

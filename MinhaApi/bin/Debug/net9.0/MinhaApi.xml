@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MinhaApi</name>
+    </assembly>
+    <members>
+        <member name="T:MyApi.Controllers.WeatherForecastController">
+            <summary>
+            Controller for weather forecast operations.
+            </summary>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GetPublic">
+            <summary>
+            Get a public weather forecast.
+            </summary>
+            <remarks>
+            This endpoint is accessible without authentication.
+            </remarks>
+            <returns>A list of weather forecasts.</returns>
+            <response code="200">Returns the list of weather forecasts.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GetPrivate">
+            <summary>
+            Get a private weather forecast.
+            </summary>
+            <remarks>
+            This endpoint is protected and requires a valid token with the "api1" scope.
+            </remarks>
+            <returns>A list of weather forecasts along with user information.</returns>
+            <response code="200">Returns the list of weather forecasts and user details.</response>
+            <response code="401">Unauthorized if the token is missing or invalid.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GetDeprecated">
+            <summary>
+            [Deprecated] Get a weather forecast (old version).
+            </summary>
+            <remarks>
+            This endpoint is deprecated. Please use <c>/weather/public</c> instead.
+            </remarks>
+            <returns>A list of weather forecasts.</returns>
+            <response code="410">Gone - This endpoint is deprecated.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GenerateCustomForecast(MyApi.Controllers.CustomForecastRequest)">
+            <summary>
+            Generate a custom weather forecast.
+            </summary>
+            <remarks>
+            This endpoint allows you to generate a custom weather forecast by providing a summary.
+            </remarks>
+            <param name="request">The request body containing the custom summary.</param>
+            <returns>The generated weather forecast.</returns>
+            <response code="200">Returns the generated weather forecast.</response>
+            <response code="400">Bad request if the input is invalid.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.DeleteForecast(System.Int32,System.DateTime)">
+            <summary>
+            Delete a weather forecast by ID and date.
+            </summary>
+            <remarks>
+            This endpoint deletes a weather forecast based on the provided ID and date.
+            The date must be in the format <c>yyyy-MM-dd</c>.
+            Example: <c>/weather/1/2025-04-30</c>.
+            </remarks>
+            <param name="id">The ID of the weather forecast to delete (must be an integer).</param>
+            <param name="date">The date of the weather forecast to delete (format: yyyy-MM-dd).</param>
+            <response code="204">No content - The weather forecast was successfully deleted.</response>
+            <response code="400">Bad request - The date format is invalid.</response>
+            <response code="404">Not found - The weather forecast with the specified ID and date does not exist.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GenerateForecast">
+            <summary>
+            Generate a weather forecast for the next 5 days.
+            </summary>
+            <remarks>
+            This method generates a random weather forecast for the next 5 days.
+            </remarks>
+            <returns>A list of weather forecasts.</returns>
+        </member>
+        <member name="T:MyApi.Controllers.WeatherForecast">
+            <summary>
+            Represents a weather forecast.
+            </summary>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecast.#ctor(System.DateOnly,System.Int32,System.String)">
+            <summary>
+            Represents a weather forecast.
+            </summary>
+        </member>
+        <member name="P:MyApi.Controllers.WeatherForecast.TemperatureF">
+            <summary>
+            Gets the temperature in Fahrenheit.
+            </summary>
+        </member>
+        <member name="T:MyApi.Controllers.CustomForecastRequest">
+            <summary>
+            Request model for generating a custom weather forecast.
+            </summary>
+        </member>
+        <member name="P:MyApi.Controllers.CustomForecastRequest.Summary">
+            <summary>
+            The custom summary for the weather forecast.
+            </summary>
+        </member>
+    </members>
+</doc>
