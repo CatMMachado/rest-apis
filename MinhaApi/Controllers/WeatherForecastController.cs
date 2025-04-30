@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using System.ComponentModel;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MyApi.Controllers;
@@ -123,13 +123,12 @@ public class WeatherForecastController : ControllerBase
     /// The date must be in the format <c>yyyy-MM-dd</c>.
     /// Example: <c>/weather/1/2025-04-30</c>.
     /// </remarks>
-    /// <param name="id">The ID of the weather forecast to delete (must be an integer).</param>
-    /// <param name="date">The date of the weather forecast to delete (format: yyyy-MM-dd).</param>
+    /// <param name="id">The ID of the weather forecast to delete (default: 1).</param>
+    /// <param name="date">The date of the weather forecast to delete (default: 2025-01-01).</param>
     /// <response code="204">No content - The weather forecast was successfully deleted.</response>
     /// <response code="400">Bad request - The date format is invalid.</response>
     /// <response code="404">Not found - The weather forecast with the specified ID and date does not exist.</response>
     [HttpDelete("{id:int}/{date:datetime}")]
-    [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -138,16 +137,17 @@ public class WeatherForecastController : ControllerBase
         Description = "Deletes a weather forecast based on the provided ID and date. The date must be in the format yyyy-MM-dd."
     )]
     public IActionResult DeleteForecast(
-        [FromRoute, SwaggerParameter(Description = "The ID of the weather forecast to delete (e.g., 1).")]
-        int id,
+        [FromRoute, SwaggerParameter(Description = "The ID of the weather forecast to delete (default: 1).")]
+        [DefaultValue(2)] int id, // Default value for ID
 
-        [FromRoute, SwaggerParameter(Description = "The date of the weather forecast to delete (format: yyyy-MM-dd, e.g., 2025-04-30).")]
-        DateTime date)
+        [FromRoute, SwaggerParameter(Description = "The date of the weather forecast to delete (default: 2025-01-01).")]
+        [DefaultValue(typeof(DateTime), "2025-01-01")] DateTime date = default // Default value for date
+    )
     {
         // Validate the date format
         if (date == default)
         {
-            return BadRequest(new { message = "Invalid date format. Use yyyy-MM-dd." });
+            date = new DateTime(2025, 1, 1); // Set default date if not provided
         }
 
         // Simulate deletion logic

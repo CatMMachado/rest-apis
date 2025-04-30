@@ -116,6 +116,7 @@ if (app.Environment.IsDevelopment())
     });
 
     // Serve the YAML specification
+    /*
     app.Use(async (context, next) =>
     {
         if (context.Request.Path.Value?.EndsWith("swagger/v1/swagger.yaml") == true)
@@ -133,6 +134,7 @@ if (app.Environment.IsDevelopment())
             await next();
         }
     });
+    */
 }
 
 // Map controllers
