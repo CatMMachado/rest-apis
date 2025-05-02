@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using Swashbuckle.AspNetCore;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MyApi.Controllers;
@@ -52,15 +53,11 @@ public class WeatherForecastController : ControllerBase
     public IActionResult GetPrivate()
     {
         var username = User.Identity?.Name ?? "No name provided";
-        var scopes = User.Claims
-                         .Where(c => c.Type == "scope")
-                         .Select(c => c.Value);
 
         return Ok(new
         {
             message = "This endpoint is protected!",
             user = username,
-            scopes = scopes,
             forecast = GenerateForecast()
         });
     }
@@ -114,6 +111,75 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(forecast);
     }
+
+    /// <summary>
+    /// Generate a custom weather forecast.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows you to generate a custom weather forecast by providing the complete WeatherForecast.
+    /// </remarks>
+    /// <param name="request">The request body containing the custom WeatherForecast.</param>
+    /// <returns>The generated weather forecast.</returns>
+    [HttpPost("CompleteForecast")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WeatherForecast))] // The "Type" parameter specifies the type of the response body.
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))] // The "Type" parameter specifies the type of the error response body.
+    public IActionResult GenerateCustomForecast([FromBody] WeatherForecast request)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Summary))
+        {
+            return BadRequest(new { message = "Request object or Summary cannot be null or empty." });
+        }
+        var forecast = new WeatherForecast(
+            request.Date,
+            request.TemperatureC,
+            request.Summary
+        );
+
+        return Ok(forecast);
+    }
+
+    /// <summary>
+    /// Generate a weather forecast with additional parameters.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows you to generate a custom weather forecast by providing additional parameters such as location and humidity.
+    /// </remarks>
+    /// <param name="request">The request body containing the custom WeatherForecast details.</param>
+    /// <param name="location">The location for the weather forecast.</param>
+    /// <param name="humidity">The humidity level for the weather forecast.</param>
+    /// <returns>The generated weather forecast with additional details.</returns>
+    [HttpPost("custom-with-params")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public IActionResult GenerateForecastWithParams(
+        [FromBody] WeatherForecast request,
+        [FromQuery] string location,
+        [FromQuery] int humidity)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Summary))
+        {
+            return BadRequest(new { message = "Request object or Summary cannot be null or empty." });
+        }
+
+        if (humidity < 0 || humidity > 100)
+        {
+            return BadRequest(new { message = "Humidity must be between 0 and 100." });
+        }
+
+        var forecast = new
+        {
+            request.Date,
+            request.TemperatureC,
+            request.Summary,
+            Location = location,
+            Humidity = humidity
+        };
+
+        return Ok(forecast);
+    }
+
 
     /// <summary>
     /// Delete a weather forecast by ID and date.
@@ -183,7 +249,12 @@ public class WeatherForecastController : ControllerBase
 /// <summary>
 /// Represents a weather forecast.
 /// </summary>
-public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+public record WeatherForecast(
+    DateOnly Date,
+    [property: SwaggerSchema(
+    Description = "The temperature in Celsius. Acceptable values range between -20 and 55.")]
+    [System.ComponentModel.DataAnnotations.Range(-20, 55, ErrorMessage = "TemperatureC must be between -20 and 55.")]
+    int TemperatureC, string? Summary)
 {
     /// <summary>
     /// Gets the temperature in Fahrenheit.
@@ -200,4 +271,20 @@ public class CustomForecastRequest
     /// The custom summary for the weather forecast.
     /// </summary>
     public string Summary { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents an error response.
+/// </summary>
+public class ErrorResponse
+{
+    /// <summary>
+    /// The error message.
+    /// </summary>
+    public string Message { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Additional details about the error.
+    /// </summary>
+    public string? Details { get; set; }
 }
