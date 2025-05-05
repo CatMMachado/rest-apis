@@ -9,6 +9,21 @@
             Controller for weather forecast operations.
             </summary>
         </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GetWithRateLimit">
+            <summary>
+            Get a weather forecast with rate limiting.
+            Test with:
+            curl -X GET http://localhost:5000/weather/limited
+            More then 5 requests for minut will return a 429 error (Too Many Requests).
+            </summary>
+            <remarks>
+            This endpoint is protected by a rate limiting policy (e.g., fixed window, sliding window, etc.).
+            Useful to demonstrate or enforce quota restrictions per client.
+            </remarks>
+            <returns>A list of weather forecasts.</returns>
+            <response code="200">Returns the list of weather forecasts.</response>
+            <response code="429">Too many requests - Rate limit has been exceeded.</response>
+        </member>
         <member name="M:MyApi.Controllers.WeatherForecastController.GetPublic">
             <summary>
             Get a public weather forecast.
@@ -51,6 +66,28 @@
             <returns>The generated weather forecast.</returns>
             <response code="200">Returns the generated weather forecast.</response>
             <response code="400">Bad request if the input is invalid.</response>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GenerateCustomForecast(MyApi.Controllers.WeatherForecast)">
+            <summary>
+            Generate a custom weather forecast.
+            </summary>
+            <remarks>
+            This endpoint allows you to generate a custom weather forecast by providing the complete WeatherForecast.
+            </remarks>
+            <param name="request">The request body containing the custom WeatherForecast.</param>
+            <returns>The generated weather forecast.</returns>
+        </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GenerateForecastWithParams(MyApi.Controllers.WeatherForecast,System.String,System.Int32)">
+            <summary>
+            Generate a weather forecast with additional parameters.
+            </summary>
+            <remarks>
+            This endpoint allows you to generate a custom weather forecast by providing additional parameters such as location and humidity.
+            </remarks>
+            <param name="request">The request body containing the custom WeatherForecast details.</param>
+            <param name="location">The location for the weather forecast.</param>
+            <param name="humidity">The humidity level for the weather forecast.</param>
+            <returns>The generated weather forecast with additional details.</returns>
         </member>
         <member name="M:MyApi.Controllers.WeatherForecastController.DeleteForecast(System.Int32,System.DateTime)">
             <summary>
@@ -99,6 +136,21 @@
         <member name="P:MyApi.Controllers.CustomForecastRequest.Summary">
             <summary>
             The custom summary for the weather forecast.
+            </summary>
+        </member>
+        <member name="T:MyApi.Controllers.ErrorResponse">
+            <summary>
+            Represents an error response.
+            </summary>
+        </member>
+        <member name="P:MyApi.Controllers.ErrorResponse.Message">
+            <summary>
+            The error message.
+            </summary>
+        </member>
+        <member name="P:MyApi.Controllers.ErrorResponse.Details">
+            <summary>
+            Additional details about the error.
             </summary>
         </member>
     </members>

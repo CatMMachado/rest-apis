@@ -51,3 +51,5 @@ C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\bin\Debug\net9.0\
 C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\bin\Debug\net9.0\keys\is-signing-key-DDC7DA648022A52829DD1C7E66FEE91C.json
 C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\bin\Debug\net9.0\MinhaApi.xml
 C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\obj\Debug\net9.0\MinhaApi.xml
+C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\bin\Debug\net9.0\AspNetCoreRateLimit.dll
+C:\CriticalSoftware\Workspace\ConstructorBasedRestAPI\MinhaApi\bin\Debug\net9.0\Newtonsoft.Json.dll

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using Swashbuckle.AspNetCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace MyApi.Controllers;
@@ -19,6 +20,37 @@ public class WeatherForecastController : ControllerBase
         "Freezing", "Bracing", "Chilly", "Cool", "Mild",
         "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
+
+/// <summary>
+/// Get a weather forecast with rate limiting.
+/// Test with:
+/// curl -X GET http://localhost:5000/weather/limited
+/// More then 5 requests for minut will return a 429 error (Too Many Requests).
+/// </summary>
+/// <remarks>
+/// This endpoint is protected by a rate limiting policy (e.g., fixed window, sliding window, etc.).
+/// Useful to demonstrate or enforce quota restrictions per client.
+/// </remarks>
+/// <returns>A list of weather forecasts.</returns>
+/// <response code="200">Returns the list of weather forecasts.</response>
+/// <response code="429">Too many requests - Rate limit has been exceeded.</response>
+[HttpGet("limited")]
+[EnableRateLimiting("fixed")] // Policy name defined in program.cs
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+[SwaggerOperation(
+    Summary = "Get weather forecast with rate limiting",
+    Description = "This endpoint demonstrates the use of rate limiting policies. If you exceed the quota, it returns status 429."
+)]
+public IActionResult GetWithRateLimit()
+{
+    var forecast = GenerateForecast();
+    return Ok(new
+    {
+        message = "This endpoint is protected by rate limiting.",
+        forecast
+    });
+}
 
     /// <summary>
     /// Get a public weather forecast.
@@ -261,6 +293,7 @@ public record WeatherForecast(
     /// </summary>
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
 
 /// <summary>
 /// Request model for generating a custom weather forecast.

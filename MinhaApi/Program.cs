@@ -4,8 +4,15 @@ using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
+
+    // Add support for memory and rate limit configuration
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddInMemoryRateLimiting();
 
 // Add controllers to the container
 builder.Services.AddControllers();
@@ -91,6 +98,9 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Middleware for rate limit
+app.UseIpRateLimiting();
+
 // ✅ First: authentication and authorization middlewares
 app.UseAuthentication();
 app.UseAuthorization();
@@ -114,27 +124,6 @@ if (app.Environment.IsDevelopment())
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce(); // Optional
     });
-
-    // Serve the YAML specification
-    /*
-    app.Use(async (context, next) =>
-    {
-        if (context.Request.Path.Value?.EndsWith("swagger/v1/swagger.yaml") == true)
-        {
-            context.Response.ContentType = "application/yaml";
-            var swaggerProvider = app.Services.GetRequiredService<ISwaggerProvider>();
-            var swaggerDoc = swaggerProvider.GetSwagger("v1");
-            using var writer = new StringWriter();
-            var yamlWriter = new Microsoft.OpenApi.Writers.OpenApiYamlWriter(writer);
-            swaggerDoc.SerializeAsV3(yamlWriter);
-            await context.Response.WriteAsync(writer.ToString());
-        }
-        else
-        {
-            await next();
-        }
-    });
-    */
 }
 
 // Map controllers
