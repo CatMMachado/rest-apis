@@ -8,7 +8,7 @@ using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-    // Add support for memory and rate limit configuration
+// Add support for memory and rate limit configuration
 builder.Services.AddMemoryCache();
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     // Enable annotations for Swagger
-    options.EnableAnnotations(); // Enables the use of Swagger annotations
+    options.EnableAnnotations();
 
     // Define the OAuth2 Client Credentials flow in Swagger
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme

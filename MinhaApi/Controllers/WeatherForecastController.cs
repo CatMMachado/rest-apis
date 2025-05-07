@@ -21,60 +21,62 @@ public class WeatherForecastController : ControllerBase
         "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-/// <summary>
-        /// Retrieves a sample resource with custom headers.
-        /// </summary>
-        /// <remarks>
-        /// This endpoint demonstrates how custom headers appear in Swagger documentation.
-        /// </remarks>
-        /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
-        /// <returns>A sample response string.</returns>
-        [HttpGet("custom-header")]
-        [SwaggerOperation(
-            Summary = "Get with custom header",
-            Description = "Returns a message after receiving a custom header"
-        )]
-        [ProducesResponseType(typeof(string), 200)]
-        [Produces("application/json")]
-        public IActionResult GetWithCustomHeader(
-            [FromHeader(Name = "X-Custom-Header")]
-            [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
-            string xCustomHeader
-        )
-        {
-            return Ok($"Received header: {xCustomHeader}");
-        }
-    
-/// <summary>
-/// Get a weather forecast with rate limiting.
-/// Test with:
-/// curl -X GET http://localhost:5000/weather/limited
-/// More then 5 requests for minut will return a 429 error (Too Many Requests).
-/// </summary>
-/// <remarks>
-/// This endpoint is protected by a rate limiting policy (e.g., fixed window, sliding window, etc.).
-/// Useful to demonstrate or enforce quota restrictions per client.
-/// </remarks>
-/// <returns>A list of weather forecasts.</returns>
-/// <response code="200">Returns the list of weather forecasts.</response>
-/// <response code="429">Too many requests - Rate limit has been exceeded.</response>
-[HttpGet("limited")]
-[EnableRateLimiting("fixed")] // Policy name defined in program.cs
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status429TooManyRequests)]
-[SwaggerOperation(
-    Summary = "Get weather forecast with rate limiting",
-    Description = "This endpoint demonstrates the use of rate limiting policies. If you exceed the quota, it returns status 429."
-)]
-public IActionResult GetWithRateLimit()
-{
-    var forecast = GenerateForecast();
-    return Ok(new
+    /// <summary>
+    /// Retrieves a sample resource with custom headers.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint demonstrates how custom headers appear in Swagger documentation.
+    /// </remarks>
+    /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
+    /// <returns>A sample response string.</returns>
+    [HttpGet("custom-header")]
+    [SwaggerOperation(
+        Summary = "Get with custom header",
+        Description = "Returns a message after receiving a custom header"
+    )]
+    [ProducesResponseType(typeof(string), 200)]
+    [Produces("application/json")]
+    public IActionResult GetWithCustomHeader(
+        [FromHeader(Name = "X-Custom-Header")]
+        [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
+        string xCustomHeader
+    )
     {
-        message = "This endpoint is protected by rate limiting.",
-        forecast
-    });
-}
+        return Ok($"Received header: {xCustomHeader}");
+    }
+        
+    /// <summary>
+    /// Get a weather forecast with rate limiting.
+    /// Test with:
+    /// curl -X GET http://localhost:5000/weather/limited
+    /// More then 5 requests for minut will return a 429 error (Too Many Requests).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is protected by a rate limiting policy (e.g., fixed window, sliding window, etc.).
+    /// Useful to demonstrate or enforce quota restrictions per client.
+    /// Rate limits and quota are returned in headers:
+    /// - X-RateLimit-Limit: Maximum requests allowed in the current window.
+    /// - X-RateLimit-Remaining: Requests remaining in the current window.
+    /// - X-Quota-Remaining: Requests remaining in your monthly quota.
+    /// </remarks>
+    /// <returns>A list of weather forecasts.</returns>
+    [HttpGet("limited")]
+    [EnableRateLimiting("fixed")] // Policy name defined in program.cs
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [SwaggerOperation(
+        Summary = "Get weather forecast with rate limiting",
+        Description = "This endpoint demonstrates the use of rate limiting policies. If you exceed the quota, it returns status 429."
+    )]
+    public IActionResult GetWithRateLimit()
+    {
+        var forecast = GenerateForecast();
+        return Ok(new
+        {
+            message = "This endpoint is protected by rate limiting.",
+            forecast
+        });
+    }
 
     /// <summary>
     /// Get a public weather forecast.
@@ -245,8 +247,8 @@ public IActionResult GetWithRateLimit()
     /// The date must be in the format <c>yyyy-MM-dd</c>.
     /// Example: <c>/weather/1/2025-04-30</c>.
     /// </remarks>
-    /// <param name="id">The ID of the weather forecast to delete (default: 1).</param>
-    /// <param name="date">The date of the weather forecast to delete (default: 2025-01-01).</param>
+    /// <param name="id">The ID of the weather forecast to delete.</param>
+    /// <param name="date">The date of the weather forecast to delete.</param>
     /// <response code="204">No content - The weather forecast was successfully deleted.</response>
     /// <response code="400">Bad request - The date format is invalid.</response>
     /// <response code="404">Not found - The weather forecast with the specified ID and date does not exist.</response>
