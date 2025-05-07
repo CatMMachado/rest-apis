@@ -22,6 +22,30 @@ public class WeatherForecastController : ControllerBase
     };
 
 /// <summary>
+        /// Retrieves a sample resource with custom headers.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint demonstrates how custom headers appear in Swagger documentation.
+        /// </remarks>
+        /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
+        /// <returns>A sample response string.</returns>
+        [HttpGet("custom-header")]
+        [SwaggerOperation(
+            Summary = "Get with custom header",
+            Description = "Returns a message after receiving a custom header"
+        )]
+        [ProducesResponseType(typeof(string), 200)]
+        [Produces("application/json")]
+        public IActionResult GetWithCustomHeader(
+            [FromHeader(Name = "X-Custom-Header")]
+            [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
+            string xCustomHeader
+        )
+        {
+            return Ok($"Received header: {xCustomHeader}");
+        }
+    
+/// <summary>
 /// Get a weather forecast with rate limiting.
 /// Test with:
 /// curl -X GET http://localhost:5000/weather/limited

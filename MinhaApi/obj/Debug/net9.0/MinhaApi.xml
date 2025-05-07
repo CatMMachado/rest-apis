@@ -9,6 +9,16 @@
             Controller for weather forecast operations.
             </summary>
         </member>
+        <member name="M:MyApi.Controllers.WeatherForecastController.GetWithCustomHeader(System.String)">
+            <summary>
+            Retrieves a sample resource with custom headers.
+            </summary>
+            <remarks>
+            This endpoint demonstrates how custom headers appear in Swagger documentation.
+            </remarks>
+            <param name="xCustomHeader">A custom header for demonstration purposes.</param>
+            <returns>A sample response string.</returns>
+        </member>
         <member name="M:MyApi.Controllers.WeatherForecastController.GetWithRateLimit">
             <summary>
             Get a weather forecast with rate limiting.
