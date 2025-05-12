@@ -1,0 +1,65 @@
+Project Name: Constructor-Based REST API
+
+Description:
+This project is a RESTful API built using ASP.NET Core. It provides endpoints for managing weather forecasts, including retrieving, creating, and deleting forecasts. The primary purpose of this project is to demonstrate how to create and configure Swagger documentation using Swashbuckle, along with other tools and techniques for enhancing API documentation.
+
+Key Features:
+1. Public and private endpoints for retrieving weather forecasts.
+2. Custom weather forecast generation with user-defined parameters.
+3. Deletion of weather forecasts by ID and date.
+4. Rate limiting to control the number of requests per client.
+5. Role-based and policy-based authentication using OAuth2.
+6. Comprehensive Swagger documentation for API testing and exploration.
+
+Controller Overview:
+The `WeatherForecastController` is the main controller of the API and contains the following endpoints:
+
+1. **Public Weather Forecast (`GET /weather/public`)**:
+   - Returns a list of weather forecasts accessible without authentication.
+
+2. **Private Weather Forecast (`GET /weather/private`)**:
+   - Returns a list of weather forecasts accessible only with a valid OAuth2 token.
+
+3. **Rate-Limited Weather Forecast (`GET /weather/limited`)**:
+   - Demonstrates rate limiting by restricting the number of requests a client can make within a specific time window.
+
+4. **Custom Weather Forecast (`POST /weather/custom`)**:
+   - Allows users to generate a custom weather forecast by providing specific parameters.
+
+5. **Delete Weather Forecast (`DELETE /weather/{id}/{date}`)**:
+   - Deletes a weather forecast by its ID and date. Includes Swagger annotations to document default values for parameters.
+
+6. **Deprecated Endpoint (`GET /weather/deprecated`)**:
+   - A deprecated endpoint that demonstrates how to mark endpoints as obsolete in Swagger.
+
+The controller is annotated with Swagger attributes such as `[SwaggerOperation]` and `[SwaggerParameter]` to provide detailed documentation for each endpoint. It also uses attributes like `[ProducesResponseType]` to specify the possible HTTP responses.
+
+Installed Libraries and Their Purpose:
+1. **Swashbuckle.AspNetCore**:
+   - Generates Swagger UI and OpenAPI specifications for the API.
+   - Provides an interactive interface for testing endpoints and viewing their details.
+
+2. **Swashbuckle.AspNetCore.Annotations**:
+   - Enables the use of attributes like `[SwaggerOperation]` and `[SwaggerParameter]` to enhance Swagger documentation with summaries, descriptions, and parameter details.
+
+3. **Microsoft.AspNetCore.Authorization**:
+   - Implements role-based and policy-based authorization for securing endpoints.
+   - Used in conjunction with OAuth2 to restrict access to private endpoints.
+
+4. **Microsoft.AspNetCore.RateLimiting**:
+   - Implements rate-limiting policies to control the number of requests a client can make within a specific time window.
+   - Demonstrated in the `GET /weather/limited` endpoint.
+
+5. **System.ComponentModel**:
+   - Provides attributes like `[DefaultValue]` to define default parameter values and enhance Swagger documentation.
+
+6. **System.ComponentModel.DataAnnotations**:
+   - Used for model validation and to define constraints on request and response models (e.g., `[Range]` for numeric properties).
+
+How to Run:
+1. Ensure you have the .NET SDK installed.
+2. Run the command `dotnet run` in the project directory.
+3. Access the Swagger UI at `http://localhost:5000/swagger` (or `https://localhost:5001/swagger` for HTTPS).
+
+Purpose:
+This project serves as a demonstration of best practices for building RESTful APIs with ASP.NET Core, with a strong focus on creating comprehensive and user-friendly API documentation using Swagger (via Swashbuckle). It highlights how to configure Swagger, use annotations, and generate OpenAPI specifications to improve API usability and developer experience.
