@@ -1,6 +1,3 @@
-using System.Reflection;
-using Microsoft.OpenApi.Models;
-
 /// <summary>
 /// Extension methods for configuring Swagger in the ASP.NET Core application.
 /// This includes setting up API documentation, OAuth2 security, and XML comments for better API visibility
