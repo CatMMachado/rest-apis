@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+#region Security (OAuth2, Scopes)
+// This class configures JWT Bearer authentication and authorization policies.
+
+
 /// <summary>
+/// Extension methods for configuring authentication and authorization in the ASP.NET Core application.
+/// This includes JWT Bearer authentication for securing API endpoints and defining authorization policies.
 /// </summary>
 public static class AuthorizationServiceExtensions
 {
@@ -50,3 +56,5 @@ public static class AuthorizationServiceExtensions
         return services;
     }
 }
+
+#endregion

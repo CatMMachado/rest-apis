@@ -1,5 +1,7 @@
-using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
+
+#region Security (OAuth2, Scopes)
+// This class configures OAuth2 clients, scopes, and identity resources for securing the API.
 
 /// <summary>
 /// Configuration for IdentityServer with in-memory clients, scopes, and identity resources.
@@ -47,3 +49,5 @@ public static class IdentityServerConfig
             new IdentityResources.Profile()
         };
 }
+
+#endregion

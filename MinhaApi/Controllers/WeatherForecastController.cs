@@ -43,7 +43,17 @@ public class WeatherForecastController : ControllerBase
     {
         return Ok($"Received header: {xCustomHeader}");
     }
-        
+
+
+    #region Service Usage Limits
+    // -------------------------------------------------------------
+    // The following endpoint demonstrates rate limiting and quota headers.
+    // Guideline: "limits which are dependent on the used service plan, acquired quota, 
+    // the service region or deployment environment MAY be mentioned in the API specification, 
+    // but their concrete values SHOULD NOT be added to an API specification 
+    // (see service usage limits in [/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md]API Documentation)."
+    // -------------------------------------------------------------
+
     /// <summary>
     /// Get a weather forecast with rate limiting.
     /// Test with:
@@ -76,6 +86,8 @@ public class WeatherForecastController : ControllerBase
             forecast
         });
     }
+
+    #endregion Service Usage Limits
 
     /// <summary>
     /// Get a public weather forecast.
@@ -119,6 +131,15 @@ public class WeatherForecastController : ControllerBase
         });
     }
 
+    #region Deprecation Notes
+    // -------------------------------------------------------------
+    // The following endpoint is deprecated.
+    // Guideline: "Deprecation notes. Deprecation notes MUST be added to an API specification 
+    // according to [/devsecops/api-governance/api-guidelines/-/blob/review/common/api-lifecycle-phases.md#deprecation]Guideline Lifecycle Phases. 
+    // OpenAPI or AsyncAPI properties description and deprecated SHOULD be used, if applicable. 
+    // Deprecation notes SHOULD mention which other API or part of an API should be used instead of the deprecated one.
+    // -------------------------------------------------------------
+
     /// <summary>
     /// [Deprecated] Get a weather forecast (old version).
     /// </summary>
@@ -138,6 +159,8 @@ public class WeatherForecastController : ControllerBase
             message = "This endpoint is deprecated. Please use /weather/public instead."
         });
     }
+
+    #endregion Deprecation Notes
 
     /// <summary>
     /// Generate a custom weather forecast.
@@ -169,6 +192,13 @@ public class WeatherForecastController : ControllerBase
         return Ok(forecast);
     }
 
+    #region Error Response Schema
+    // -------------------------------------------------------------
+    // The following class defines the error response schema. 
+    // Guideline: "details on error response status codes, error schemas, 
+    // error types, and a clear association of errors to operations"
+    // -------------------------------------------------------------
+    
     /// <summary>
     /// Generate a custom weather forecast.
     /// </summary>
@@ -181,6 +211,7 @@ public class WeatherForecastController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WeatherForecast))] // The "Type" parameter specifies the type of the response body.
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))] // The "Type" parameter specifies the type of the error response body.
+
     public IActionResult GenerateCustomForecast([FromBody] WeatherForecast request)
     {
         if (request == null || string.IsNullOrWhiteSpace(request.Summary))
@@ -195,6 +226,8 @@ public class WeatherForecastController : ControllerBase
 
         return Ok(forecast);
     }
+
+    #endregion Error Response Schema
 
     /// <summary>
     /// Generate a weather forecast with additional parameters.
@@ -237,6 +270,13 @@ public class WeatherForecastController : ControllerBase
         return Ok(forecast);
     }
 
+
+    #region Parameter Restrictions and Defaults
+    // -------------------------------------------------------------
+    // The following endpoint demonstrates parameter restrictions and default values.
+    // Guideline: "restrictions with respect to format, character or number range of parameters and properties
+    // restrictions with respect to number of array items or additional properties"
+    // -------------------------------------------------------------
 
     /// <summary>
     /// Delete a weather forecast by ID and date.
@@ -284,6 +324,8 @@ public class WeatherForecastController : ControllerBase
         return NoContent();
     }
 
+    #endregion Parameter Restrictions and Defaults
+
     /// <summary>
     /// Generate a weather forecast for the next 5 days.
     /// </summary>
@@ -318,7 +360,6 @@ public record WeatherForecast(
     /// </summary>
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
-
 
 /// <summary>
 /// Request model for generating a custom weather forecast.
