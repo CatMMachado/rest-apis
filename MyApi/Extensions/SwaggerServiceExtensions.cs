@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Asp.Versioning.ApiExplorer;
 
 /// <summary>
 /// Extension methods for configuring Swagger in the ASP.NET Core application.
@@ -18,12 +19,19 @@ public static class SwaggerServiceExtensions
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo
+            // Configure multiple API versions
+            var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+            
+            foreach (var description in provider.ApiVersionDescriptions)
             {
-                Title = "My API",
-                Version = "v1",
-                Description = "Example API using local IdentityServer for authentication"
-            });
+                options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                {
+                    Title = "My API",
+                    Version = description.ApiVersion.ToString(),
+                    Description = $"Example API using local IdentityServer for authentication - Version {description.ApiVersion}"
+                });
+            }
+            
             options.EnableAnnotations();
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {

@@ -2,6 +2,7 @@ using System.Text;
 using AspNetCoreRateLimit;
 using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.Swagger;
+using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,30 @@ builder.Services.AddCustomSwagger();
 
 #endregion API Specification Setup
 
+#region Versioning
+// -------------------------------------------------------------
+// API Versioning Setup
+// Guidelines: "API versioning enables backward compatibility and smooth transitions 
+// between different versions of the API. This configuration supports URL path versioning."
+// -------------------------------------------------------------
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(), // Support /v1/weather, /v2/weather
+        new QueryStringApiVersionReader("version"), // Support ?version=1.0
+        new HeaderApiVersionReader("X-Version") // Support X-Version header
+    );
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+}).AddMvc().AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+#endregion Versioning
+
 #endregion Service Registration
 
 var app = builder.Build();
@@ -64,8 +89,20 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1 (JSON)");
-        options.SwaggerEndpoint("/swagger/v1/swagger.yaml", "My API v1 (YAML)");
+        var provider = app.Services.GetRequiredService<Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider>();
+        
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                $"My API {description.GroupName.ToUpper()} (JSON)"
+            );
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.yaml",
+                $"My API {description.GroupName.ToUpper()} (YAML)"
+            );
+        }
+        
         options.OAuthClientId("minimalrestapi-client");
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();

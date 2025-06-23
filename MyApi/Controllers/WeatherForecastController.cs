@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
+using Asp.Versioning;
 
 namespace MyApi.Controllers;
 
@@ -11,7 +12,9 @@ namespace MyApi.Controllers;
 /// </summary>
 [Authorize(Policy = "ApiScope")]
 [ApiController]
-[Route("weather")]
+[Route("v{version:apiVersion}/weather")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -325,6 +328,162 @@ public class WeatherForecastController : ControllerBase
     }
 
     #endregion Parameter Restrictions and Defaults
+
+    #region Versioning
+    // -------------------------------------------------------------
+    // API Versioning Endpoints
+    // Guidelines: "API versioning enables backward compatibility and allows 
+    // different versions of endpoints to coexist, providing smooth transitions 
+    // between API versions."
+    // -------------------------------------------------------------
+
+    /// <summary>
+    /// Get weather forecast data (V1 only endpoint).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is only available in API version 1.0.
+    /// It demonstrates a feature that exists only in the first version of the API.
+    /// </remarks>
+    /// <returns>A simple weather forecast response for V1.</returns>
+    /// <response code="200">Returns the V1 weather forecast data.</response>
+    [HttpGet("v1-only")]
+    [MapToApiVersion("1.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Summary = "Get weather forecast (V1 only)",
+        Description = "This endpoint is exclusive to API version 1.0 and returns basic weather data."
+    )]
+    public IActionResult GetWeatherV1Only()
+    {
+        var forecast = new
+        {
+            Version = "1.0",
+            Message = "This is a V1-only endpoint",
+            Data = GenerateForecast().Take(3), // V1 returns only 3 forecasts
+            Features = new[] { "Basic forecasting", "Simple data structure" }
+        };
+
+        return Ok(forecast);
+    }
+
+    /// <summary>
+    /// Get advanced weather forecast data (V2 only endpoint).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is only available in API version 2.0.
+    /// It demonstrates new features and enhanced data structure available in V2.
+    /// </remarks>
+    /// <returns>An advanced weather forecast response for V2.</returns>
+    /// <response code="200">Returns the V2 advanced weather forecast data.</response>
+    [HttpGet("v2-only")]
+    [MapToApiVersion("2.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Summary = "Get advanced weather forecast (V2 only)",
+        Description = "This endpoint is exclusive to API version 2.0 and returns enhanced weather data with additional features."
+    )]
+    public IActionResult GetWeatherV2Only()
+    {
+        var forecast = new
+        {
+            Version = "2.0",
+            Message = "This is a V2-only endpoint with enhanced features",
+            Data = GenerateForecast().Select(f => new
+            {
+                f.Date,
+                f.TemperatureC,
+                f.TemperatureF,
+                f.Summary,
+                // V2 additions
+                Humidity = Random.Shared.Next(30, 90),
+                WindSpeed = Random.Shared.Next(0, 25),
+                Pressure = Random.Shared.Next(995, 1025)
+            }),
+            Features = new[] { "Advanced forecasting", "Extended data structure", "Additional weather metrics" },
+            Metadata = new
+            {
+                DataSource = "Advanced Weather API v2",
+                LastUpdated = DateTime.UtcNow,
+                Accuracy = "High precision"
+            }
+        };
+
+        return Ok(forecast);
+    }
+
+    /// <summary>
+    /// Get weather summary (Available in both V1 and V2).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is available in both API versions but returns different data structures.
+    /// V1 returns basic summary, while V2 includes additional metadata.
+    /// </remarks>
+    /// <returns>Weather summary data appropriate for the requested version.</returns>
+    /// <response code="200">Returns version-specific weather summary data.</response>
+    [HttpGet("summary")]
+    [MapToApiVersion("1.0")]
+    [MapToApiVersion("2.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Summary = "Get weather summary (V1 and V2)",
+        Description = "This endpoint is available in both versions but returns different data structures based on the API version."
+    )]
+    public IActionResult GetWeatherSummary()
+    {
+        var requestedVersion = HttpContext.GetRequestedApiVersion();
+        
+        if (requestedVersion?.MajorVersion == 1)
+        {
+            // V1 response - simple structure
+            var v1Response = new
+            {
+                Version = "1.0",
+                Summary = "Basic weather summary",
+                TotalForecasts = 5,
+                AverageTemperature = GenerateForecast().Average(f => f.TemperatureC),
+                AvailableLocations = new[] { "City A", "City B", "City C" }
+            };
+
+            return Ok(v1Response);
+        }
+        else
+        {
+            // V2 response - enhanced structure
+            var forecasts = GenerateForecast().ToList();
+            var v2Response = new
+            {
+                Version = "2.0",
+                Summary = "Enhanced weather summary with detailed analytics",
+                Statistics = new
+                {
+                    TotalForecasts = forecasts.Count,
+                    AverageTemperature = forecasts.Average(f => f.TemperatureC),
+                    MinTemperature = forecasts.Min(f => f.TemperatureC),
+                    MaxTemperature = forecasts.Max(f => f.TemperatureC),
+                    TemperatureRange = forecasts.Max(f => f.TemperatureC) - forecasts.Min(f => f.TemperatureC)
+                },
+                Locations = new[]
+                {
+                    new { Name = "City A", Region = "North", Population = 150000 },
+                    new { Name = "City B", Region = "South", Population = 200000 },
+                    new { Name = "City C", Region = "East", Population = 175000 }
+                },
+                Metadata = new
+                {
+                    AnalysisDate = DateTime.UtcNow,
+                    DataQuality = "Premium",
+                    PredictionAccuracy = 95.5
+                }
+            };
+
+            return Ok(v2Response);
+        }
+    }
+
+    #endregion Versioning
 
     /// <summary>
     /// Generate a weather forecast for the next 5 days.
