@@ -103,7 +103,7 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
             );
         }
         
-        options.OAuthClientId("minimalrestapi-client");
+        options.OAuthClientId("minimalrestapi-client"); // TODO: replace this reference to the minimal api
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();
     });

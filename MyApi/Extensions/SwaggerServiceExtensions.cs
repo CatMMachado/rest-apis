@@ -33,6 +33,7 @@ public static class SwaggerServiceExtensions
             }
             
             options.EnableAnnotations();
+
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
@@ -48,6 +49,7 @@ public static class SwaggerServiceExtensions
                     }
                 }
             });
+
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -62,10 +64,13 @@ public static class SwaggerServiceExtensions
                     new[] { "api1" }
                 }
             });
+
+            // Enable XML comments for API documentation
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
+        
         return services;
     }
 }

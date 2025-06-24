@@ -1,16 +1,10 @@
 # REST APIs
 
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [Controller-based APIs](RestApisControllerBased#introduction)
-3. [Minimal APIs]
-
 ## Introduction
 
 REST APIs are one of the most common architectures in .NET backend development. ASP.NET Core offers a powerful and flexible way to expose HTTP endpoints, and documenting these APIs is essential for both internal collaboration and external consumption.
 
-In this section, we focus on generating and customizing API documentation for REST services using Swashbuckle, a popular library that integrates Swagger/OpenAPI tooling into ASP.NET Core applications.
+In this section, we focus on generating and customizing API documentation for REST services using **Swashbuckle**, a popular library that integrates Swagger/OpenAPI tooling into ASP.NET Core applications.
 
 ### Swashbuckle
 
@@ -88,4 +82,5 @@ app.MapGet("/products", () =>
 
 The next sections will guide you through the concrete setup of Swashbuckle in your .NET project and show you how to document your endpoints depending on the approach you’ve adopted.
 
-A demo repository is available to illustrate how Swashbuckle is applied to both controller-based APIs and Minimal APIs. This tutorial will reference that codebase in the subsequent examples.
+A demo repository is available to illustrate how Swashbuckle is applied to both controller-based APIs and Minimal APIs, respectively called "ControllerBasedRestApi" and "MinimalRestApi".
+This tutorial will reference those repositories in the subsequent examples.
