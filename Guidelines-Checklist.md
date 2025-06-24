@@ -61,3 +61,7 @@ Each item below represents a guideline. At the end of each item, there's a check
   _Identified in: WeatherForecastController.cs (`#region Versioning`)_
 - [x] Swagger documentation SHOULD support multiple API versions with separate documentation for each version.
   _Identified in: SwaggerServiceExtensions.cs, Program.cs (multiple SwaggerDoc configurations)_
+
+**Add Authenticattion**
+// Security (OAuth2, Scopes): The API must be secured using OAuth2,
+// and the specification must document required scopes and authentication flows.

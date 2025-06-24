@@ -49,9 +49,9 @@ public class WeatherForecastController : ControllerBase
 
 
     #region Service Usage Limits
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
     // The following endpoint demonstrates rate limiting and quota headers.
-    // -------------------------------------------------------------
+    // --------------------------------------------------------------------
 
     /// <summary>
     /// Get a weather forecast with rate limiting.

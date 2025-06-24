@@ -1,7 +1,4 @@
 #region Security (OAuth2, Scopes)
-// -------------------------------------------------------------
-// The API must be secured using OAuth2, and the specification must document required scopes and authentication flows.
-// -------------------------------------------------------------
 
 /// <summary>
 /// Extension methods for configuring IdentityServer in the ASP.NET Core application.
