@@ -28,3 +28,4 @@ In each section of this guide, you will find the setup steps for each tool, usag
 [REST APIs](RestApis.md#introduction)
 [gRPC]
 [Message Brokers]
+[Integration with Backstage]

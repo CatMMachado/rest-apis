@@ -1,7 +1,4 @@
-using System.Text;
 using AspNetCoreRateLimit;
-using Microsoft.OpenApi.Writers;
-using Swashbuckle.AspNetCore.Swagger;
 using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,8 +50,7 @@ builder.Services.AddCustomSwagger();
 // -------------------------------------------------------------
 // API Versioning Setup
 // Guidelines: "API versioning enables backward compatibility and smooth transitions 
-// between different versions of the API. This configuration supports URL path versioning."
-// -------------------------------------------------------------
+// between different versions of the API. This configuration supports URL path versioning." // TODO: according to the comments below, it supports 3 types of versioning. Update text.
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -103,7 +99,7 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
             );
         }
         
-        options.OAuthClientId("minimalrestapi-client"); // TODO: replace this reference to the minimal api
+        options.OAuthClientId("minimalrestapi-client");
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();
     });
