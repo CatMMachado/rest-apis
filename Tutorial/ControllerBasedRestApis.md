@@ -65,6 +65,9 @@ After running your application, go to `http://localhost:5000/swagger/index.html`
 
 To check the content of you actual specification files, go to `http://localhost:5000/swagger/v1/swagger.yaml` for the yaml file and to `http://localhost:5000/swagger/v1/swagger.json` for the json file (as before, adjust the port if needed).
 
-### Integrate with Backstage ??
+### Integrate with Backstage
+
+To see your new API documentation in Backstage, follow the instruction in section [Integration with Backstage](Backstage.md#backstage).
+
 
 ## Swashbuckle and the API Guidelines

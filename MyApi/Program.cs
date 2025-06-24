@@ -1,4 +1,3 @@
-using System.Text;
 using AspNetCoreRateLimit;
 using Asp.Versioning;
 
@@ -14,9 +13,6 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 #region Setup for Rate Limiting
 // -------------------------------------------------------------
 // Setup for Rate Limiting
-// Guidelines: "limits which are dependent on the used service plan,
-// acquired quota, the service region or deployment environment MAY be mentioned in the API specification, 
-// but their concrete values SHOULD NOT be added to an API specification."
 // -------------------------------------------------------------
 
 builder.Services.AddInMemoryRateLimiting();
@@ -26,8 +22,8 @@ builder.Services.AddInMemoryRateLimiting();
 #region Setup for Authentication, Authorization, and IdentityServer
 // -------------------------------------------------------------
 // Setup for Authentication, Authorization, and IdentityServer
-// Guidelines: "Security (OAuth2, Scopes): The API must be secured using OAuth2, 
-// and the specification must document required scopes and authentication flows."
+// Security (OAuth2, Scopes): The API must be secured using OAuth2, 
+// and the specification must document required scopes and authentication flows.
 // -------------------------------------------------------------
 
 builder.Services.AddCustomIdentityServer();
@@ -39,8 +35,8 @@ builder.Services.AddCustomAuthorization();
 #region API Specification Setup
 // -------------------------------------------------------------
 // API Specification Setup
-// Guidelines: "For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used.
-// The API specifications SHOULD be provided in YAML format for consistency reasons."
+// For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used.
+// The API specifications SHOULD be provided in YAML format for consistency reasons.
 // -------------------------------------------------------------
 
 builder.Services.AddCustomSwagger();
@@ -50,9 +46,9 @@ builder.Services.AddCustomSwagger();
 #region Versioning
 // -------------------------------------------------------------
 // API Versioning Setup
-// Guidelines: "API versioning enables backward compatibility and smooth transitions 
-// between different versions of the API. This configuration supports URL path versioning."
-// -------------------------------------------------------------
+// API versioning enables backward compatibility and smooth transitions 
+// between different versions of the API. This configuration supports three types of versioning:
+// URL path (/v1/weather), query string (?version=1.0), and header (X-Version).
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -99,7 +95,7 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
                 $"My API {description.GroupName.ToUpper()} (YAML)"
             );
         }
-
+        
         options.OAuthClientId("auth-client-id");
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();
