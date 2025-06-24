@@ -1,7 +1,5 @@
 using System.Text;
 using AspNetCoreRateLimit;
-using Microsoft.OpenApi.Writers;
-using Swashbuckle.AspNetCore.Swagger;
 using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,10 +63,9 @@ builder.Services.AddApiVersioning(options =>
     );
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
-}).AddMvc().AddApiExplorer(options =>
+}).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
 });
 
 #endregion Versioning
@@ -102,8 +99,8 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
                 $"My API {description.GroupName.ToUpper()} (YAML)"
             );
         }
-        
-        options.OAuthClientId("minimalrestapi-client"); // TODO: replace this reference to the minimal api
+
+        options.OAuthClientId("auth-client-id");
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();
     });

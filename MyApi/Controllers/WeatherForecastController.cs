@@ -51,10 +51,6 @@ public class WeatherForecastController : ControllerBase
     #region Service Usage Limits
     // -------------------------------------------------------------
     // The following endpoint demonstrates rate limiting and quota headers.
-    // Guideline: "limits which are dependent on the used service plan, acquired quota, 
-    // the service region or deployment environment MAY be mentioned in the API specification, 
-    // but their concrete values SHOULD NOT be added to an API specification 
-    // (see service usage limits in [/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md]API Documentation)."
     // -------------------------------------------------------------
 
     /// <summary>
@@ -137,10 +133,6 @@ public class WeatherForecastController : ControllerBase
     #region Deprecation Notes
     // -------------------------------------------------------------
     // The following endpoint is deprecated.
-    // Guideline: "Deprecation notes. Deprecation notes MUST be added to an API specification 
-    // according to [/devsecops/api-governance/api-guidelines/-/blob/review/common/api-lifecycle-phases.md#deprecation]Guideline Lifecycle Phases. 
-    // OpenAPI or AsyncAPI properties description and deprecated SHOULD be used, if applicable. 
-    // Deprecation notes SHOULD mention which other API or part of an API should be used instead of the deprecated one.
     // -------------------------------------------------------------
 
     /// <summary>
@@ -198,8 +190,6 @@ public class WeatherForecastController : ControllerBase
     #region Error Response Schema
     // -------------------------------------------------------------
     // The following class defines the error response schema. 
-    // Guideline: "details on error response status codes, error schemas, 
-    // error types, and a clear association of errors to operations"
     // -------------------------------------------------------------
     
     /// <summary>
@@ -277,8 +267,6 @@ public class WeatherForecastController : ControllerBase
     #region Parameter Restrictions and Defaults
     // -------------------------------------------------------------
     // The following endpoint demonstrates parameter restrictions and default values.
-    // Guideline: "restrictions with respect to format, character or number range of parameters and properties
-    // restrictions with respect to number of array items or additional properties"
     // -------------------------------------------------------------
 
     /// <summary>
@@ -332,9 +320,6 @@ public class WeatherForecastController : ControllerBase
     #region Versioning
     // -------------------------------------------------------------
     // API Versioning Endpoints
-    // Guidelines: "API versioning enables backward compatibility and allows 
-    // different versions of endpoints to coexist, providing smooth transitions 
-    // between API versions."
     // -------------------------------------------------------------
 
     /// <summary>

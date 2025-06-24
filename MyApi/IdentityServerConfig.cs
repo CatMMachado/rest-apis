@@ -18,7 +18,7 @@ public static class IdentityServerConfig
         {
             new Client
             {
-                ClientId = "minimalrestapi-client",
+                ClientId = "auth-client-id",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets =
                 {

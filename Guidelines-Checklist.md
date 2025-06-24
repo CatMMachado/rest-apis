@@ -1,4 +1,3 @@
-
 # Common API Guidelines – Checklist
 
 Each item below represents a guideline. At the end of each item, there's a checkbox to mark whether it is fulfilled (`[x]`) or not (`[ ]`).
@@ -12,10 +11,6 @@ Each item below represents a guideline. At the end of each item, there's a check
 ## Format
 - [x] API specifications SHOULD be provided in YAML format for consistency reasons.
   _Identified in: Program.cs (`#region API Specification Setup` and YAML endpoint)_
-
-## Internal vs External APIs
-- [ ] A clear distinction between internal and external APIs SHOULD exist. Both types SHOULD be available to internal users. Only external APIs SHOULD be made available to external users.
-- [ ] An internal API example: a backend (BE) that serves a web frontend (FE) application.
 
 ## API Specification Content
 - [x] API specifications MUST include or reference all required syntactic information for client developers.
@@ -57,4 +52,12 @@ Each item below represents a guideline. At the end of each item, there's a check
 - [ ] For asynchronous messaging APIs: message topics, full messages, or parts of message schemas MAY be deprecated.
   _Not applicable (no async API in this project)_
 
----
+## API Versioning
+- [x] API versioning SHOULD be implemented to enable backward compatibility and smooth transitions between different versions.
+  _Identified in: Program.cs (`#region Versioning`)_
+- [x] Multiple versioning strategies SHOULD be supported (URL path, query string, headers).
+  _Identified in: Program.cs (`#region Versioning` - UrlSegmentApiVersionReader, QueryStringApiVersionReader, HeaderApiVersionReader)_
+- [x] Version-specific endpoints SHOULD be clearly documented and demonstrated.
+  _Identified in: WeatherForecastController.cs (`#region Versioning`)_
+- [x] Swagger documentation SHOULD support multiple API versions with separate documentation for each version.
+  _Identified in: SwaggerServiceExtensions.cs, Program.cs (multiple SwaggerDoc configurations)_
