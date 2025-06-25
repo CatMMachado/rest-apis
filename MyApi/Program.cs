@@ -11,20 +11,18 @@ builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection(
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 #region Setup for Rate Limiting
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Setup for Rate Limiting
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 builder.Services.AddInMemoryRateLimiting();
 
 #endregion Setup for Rate Limiting
 
 #region Setup for Authentication, Authorization, and IdentityServer
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Setup for Authentication, Authorization, and IdentityServer
-// Security (OAuth2, Scopes): The API must be secured using OAuth2, 
-// and the specification must document required scopes and authentication flows.
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 builder.Services.AddCustomIdentityServer();
 builder.Services.AddCustomAuthentication();
@@ -33,22 +31,20 @@ builder.Services.AddCustomAuthorization();
 #endregion Setup for Authentication, Authorization, and IdentityServer
 
 #region API Specification Setup
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // API Specification Setup
-// For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used.
-// The API specifications SHOULD be provided in YAML format for consistency reasons.
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 builder.Services.AddCustomSwagger();
 
 #endregion API Specification Setup
 
 #region Versioning
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // API Versioning Setup
-// API versioning enables backward compatibility and smooth transitions 
-// between different versions of the API. This configuration supports three types of versioning:
+// This configuration supports three types of versioning:
 // URL path (/v1/weather), query string (?version=1.0), and header (X-Version).
+// ----------------------------------------------------------------------------
 
 builder.Services.AddApiVersioning(options =>
 {
