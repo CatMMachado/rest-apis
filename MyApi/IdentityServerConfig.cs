@@ -35,7 +35,7 @@ public static class IdentityServerConfig
     public static IEnumerable<ApiScope> GetApiScopes() =>
         new List<ApiScope>
         {
-            new ApiScope("api1", "MinimalRestAPI")
+            new ApiScope("api1", "Api Scope")
         };
 
     /// <summary>
