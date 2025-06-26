@@ -48,7 +48,7 @@ dotnet add package Microsoft.AspNetCore.OpenApi
 1. To configure and register Swagger in your application:
 
 - Add the contents of `SwaggerServiceExtension.AddCustomSwagger()` to your repository
-- Integrate these exensions into your application as shown in section `API Specification Setup` of `Program.cs`
+- Integrate these extensions into your application as shown in section `API Specification Setup` of `Program.cs`
 
 2. To develop and test the API documentation, enable Swagger and he Swagger UI in the development environment, as shown in section `Configure Middleware` of `Program.cs`.
 In this secttion you can see that an URL is being defined to show the API specification files, both in yaml and json format.
@@ -67,7 +67,9 @@ To check the content of you actual specification files, go to `http://localhost:
 
 ### Integrate with Backstage
 
-To see your new API documentation in Backstage, follow the instruction in section [Integration with Backstage](Backstage.md#backstage).
-
+To see your new API documentation in Backstage, follow the instructions in section [Integration with Backstage](Backstage.md#backstage).
 
 ## Swashbuckle and the API Guidelines
+
+This section describes how to use Swashbuckle to extend your current API documentation, so that it complies with your company's [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
+

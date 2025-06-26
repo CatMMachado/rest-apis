@@ -42,7 +42,6 @@ public class ProductsController : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [SwaggerOperation(Summary = "List all products", Description = "Returns a list of all available products")]
     public IActionResult GetProducts()
     {
         return Ok(new[] { "Product A", "Product B" });

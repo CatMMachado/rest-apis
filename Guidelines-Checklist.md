@@ -3,22 +3,26 @@
 Each item below represents a guideline. At the end of each item, there's a checkbox to mark whether it is fulfilled (`[x]`) or not (`[ ]`).
 
 ## API Specification Type
+
 - [x] For synchronous HTTP-based APIs, OpenAPI specification version 3 or higher MUST be used.
   _Identified in: Program.cs, SwaggerServiceExtensions.cs (`#region API Specification Setup`)_
 - [ ] For asynchronous messaging APIs, AsyncAPI specification version 2 or higher MUST be used.
    _Not applicable (no async API in this project)_
 
 ## Format
+
 - [x] API specifications SHOULD be provided in YAML format for consistency reasons.
   _Identified in: Program.cs (`#region API Specification Setup` and YAML endpoint)_
 
 ## API Specification Content
+
 - [x] API specifications MUST include or reference all required syntactic information for client developers.
   _Identified in: SwaggerServiceExtensions.cs, WeatherForecastController.cs (`#region Request/Response Schemas, Parameters, and Examples`)_
 - [x] A minimum level of semantic information SHOULD be included so that client developers with domain knowledge understand the API’s purpose and usage.
   _Identified in: WeatherForecastController.cs (`#region Request/Response Schemas, Parameters, and Examples`)_
 
 ## Required Content
+
 - [x] Fully defined request and response or message schemas.
   _Identified in: WeatherForecastController.cs (`#region Request/Response Schemas, Parameters, and Examples`)_
 - [x] Details on header, query, and path parameters, including allowed values and defaults.
@@ -35,10 +39,12 @@ Each item below represents a guideline. At the end of each item, there's a check
   _Identified in: WeatherForecastController.cs (`#region Request/Response Schemas, Parameters, and Examples`)_
 
 ## Service Limits
+
 - [x] Limits based on service plan, quota, region, or environment MAY be mentioned, but actual values SHOULD NOT be included.
   _Identified in: Program.cs, WeatherForecastController.cs (`#region Service Usage Limits`)_
 
 ## Deprecation Notes
+
 - [x] Deprecation notes MUST be added following the API Lifecycle Phases.
   _Identified in: WeatherForecastController.cs (`#region Deprecation Notes`)_
 - [x] OpenAPI/AsyncAPI description and deprecated properties SHOULD be used if applicable.
@@ -47,12 +53,14 @@ Each item below represents a guideline. At the end of each item, there's a check
   _Identified in: WeatherForecastController.cs (`#region Deprecation Notes`)_
 
 ## What Can Be Deprecated
+
 - [x] For HTTP APIs: endpoints, methods, parameters, supported media types, or parts of request/response schemas MAY be deprecated.
   _Identified in: WeatherForecastController.cs (`#region Deprecation Notes`)_
 - [ ] For asynchronous messaging APIs: message topics, full messages, or parts of message schemas MAY be deprecated.
   _Not applicable (no async API in this project)_
 
 ## API Versioning
+
 - [x] API versioning SHOULD be implemented to enable backward compatibility and smooth transitions between different versions.
   _Identified in: Program.cs (`#region Versioning`)_
 - [x] Multiple versioning strategies SHOULD be supported (URL path, query string, headers).
