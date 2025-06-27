@@ -470,6 +470,138 @@ public class WeatherForecastController : ControllerBase
 
     #endregion Versioning
 
+    #region Internal and External APIs
+    // -------------------------------------------------------------
+    // Internal and External API Endpoints
+    // These endpoints demonstrate different access levels for API consumers
+    // -------------------------------------------------------------
+
+    /// <summary>
+    /// Get internal weather analytics data (Internal API only).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is restricted to internal systems only and provides detailed analytics data
+    /// that should not be exposed to external clients. Requires internal scope and client type.
+    /// </remarks>
+    /// <returns>Detailed internal weather analytics and system metrics.</returns>
+    /// <response code="200">Returns internal analytics data.</response>
+    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
+    /// <response code="403">Forbidden if the client lacks internal access privileges.</response>
+    [HttpGet("internal/analytics")]
+    [Authorize(Policy = "InternalApiAccess")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [SwaggerOperation(
+        Summary = "Get internal weather analytics (Internal API)",
+        Description = "Restricted endpoint that provides detailed weather analytics for internal systems only."
+    )]
+    public IActionResult GetInternalAnalytics()
+    {
+        var internalData = new
+        {
+            AccessLevel = "Internal",
+            Message = "This is internal-only weather analytics data",
+            SystemMetrics = new
+            {
+                ServerLoad = Random.Shared.Next(10, 90),
+                DatabaseConnections = Random.Shared.Next(50, 200),
+                CacheHitRatio = Math.Round(Random.Shared.NextDouble() * 100, 2),
+                LastUpdated = DateTime.UtcNow
+            },
+            DetailedForecasts = GenerateForecast().Select(f => new
+            {
+                f.Date,
+                f.TemperatureC,
+                f.TemperatureF,
+                f.Summary,
+                // Internal-only data
+                RawSensorData = Random.Shared.Next(1000, 9999),
+                ConfidenceLevel = Math.Round(Random.Shared.NextDouble() * 100, 2),
+                DataSource = "Internal Weather Station Network",
+                ProcessingTime = Random.Shared.Next(10, 100) + "ms"
+            }),
+            InternalNotes = new[]
+            {
+                "High confidence readings from station cluster A",
+                "Sensor calibration completed yesterday",
+                "Processing pipeline running optimally"
+            }
+        };
+
+        return Ok(internalData);
+    }
+
+    /// <summary>
+    /// Get public weather forecast summary (External API).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is available to external clients and provides a clean, 
+    /// public-facing weather forecast without sensitive internal data.
+    /// </remarks>
+    /// <returns>Public weather forecast data suitable for external consumption.</returns>
+    /// <response code="200">Returns public weather forecast data.</response>
+    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
+    [HttpGet("external/forecast")]
+    [Authorize(Policy = "ExternalApiAccess")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [SwaggerOperation(
+        Summary = "Get public weather forecast (External API)",
+        Description = "Public endpoint that provides weather forecast data for external clients and third-party integrations."
+    )]
+    public IActionResult GetExternalForecast()
+    {
+        var externalData = new
+        {
+            AccessLevel = "External",
+            Message = "Public weather forecast data for external clients",
+            ApiVersion = "1.0",
+            Forecasts = GenerateForecast().Select(f => new
+            {
+                Date = f.Date.ToString("yyyy-MM-dd"),
+                Temperature = new
+                {
+                    Celsius = f.TemperatureC,
+                    Fahrenheit = f.TemperatureF
+                },
+                Condition = f.Summary,
+                Icon = GetWeatherIcon(f.Summary)
+            }),
+            Metadata = new
+            {
+                Provider = "MyWeather API",
+                UpdateFrequency = "Every 6 hours",
+                Coverage = "Global",
+                Accuracy = "Standard precision"
+            },
+            Links = new
+            {
+                Documentation = "/swagger",
+                Support = "https://api.myweather.com/support"
+            }
+        };
+
+        return Ok(externalData);
+    }
+
+    /// <summary>
+    /// Helper method to get weather icon based on summary.
+    /// </summary>
+    /// <param name="summary">Weather condition summary.</param>
+    /// <returns>Icon identifier for the weather condition.</returns>
+    private static string GetWeatherIcon(string? summary) => summary?.ToLower() switch
+    {
+        var s when s?.Contains("sun") == true || s?.Contains("clear") == true => "☀️",
+        var s when s?.Contains("cloud") == true => "☁️",
+        var s when s?.Contains("rain") == true => "🌧️",
+        var s when s?.Contains("snow") == true => "❄️",
+        var s when s?.Contains("storm") == true => "⛈️",
+        _ => "🌤️"
+    };
+
+    #endregion Internal and External APIs
+
     /// <summary>
     /// Generate a weather forecast for the next 5 days.
     /// </summary>

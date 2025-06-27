@@ -62,6 +62,27 @@ builder.Services.AddApiVersioning(options =>
 
 #endregion Versioning
 
+#region Internal and External APIs
+// ----------------------------------------------------------------------------
+// Internal and External APIs Configuration
+// This section configures different access levels for API consumers:
+// - Internal APIs: Restricted to internal systems and services only
+// - External APIs: Available to external clients and third-party consumers
+// ----------------------------------------------------------------------------
+
+// Configure policies for internal and external API access
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("InternalApiAccess", policy =>
+        policy.RequireClaim("scope", "api1.internal")
+              .RequireClaim("client_type", "internal"));
+    
+    options.AddPolicy("ExternalApiAccess", policy =>
+        policy.RequireClaim("scope", "api1.external"));
+});
+
+#endregion Internal and External APIs
+
 #endregion Service Registration
 
 var app = builder.Build();

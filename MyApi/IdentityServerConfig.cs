@@ -16,6 +16,33 @@ public static class IdentityServerConfig
     public static IEnumerable<Client> GetClients() =>
         new List<Client>
         {
+            // Internal client with access to internal APIs
+            new Client
+            {
+                ClientId = "internal-client-id",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets =
+                {
+                    new Secret("internal-client-secret".Sha256())
+                },
+                AllowedScopes = { "api1", "api1.internal" },
+                Claims = new List<ClientClaim>
+                {
+                    new ClientClaim("client_type", "internal")
+                }
+            },
+            // External client with access to external APIs only
+            new Client
+            {
+                ClientId = "external-client-id",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets =
+                {
+                    new Secret("external-client-secret".Sha256())
+                },
+                AllowedScopes = { "api1", "api1.external" }
+            },
+            // General client for backward compatibility
             new Client
             {
                 ClientId = "auth-client-id",
@@ -35,7 +62,9 @@ public static class IdentityServerConfig
     public static IEnumerable<ApiScope> GetApiScopes() =>
         new List<ApiScope>
         {
-            new ApiScope("api1", "Api Scope")
+            new ApiScope("api1", "General API Access"),
+            new ApiScope("api1.internal", "Internal API Access"),
+            new ApiScope("api1.external", "External API Access")
         };
 
     /// <summary>
