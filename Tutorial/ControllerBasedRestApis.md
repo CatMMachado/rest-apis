@@ -13,7 +13,18 @@ Controller-based APIs follow the traditional ASP.NET Core MVC pattern, where rou
 - Enrichment through XML comments and annotations
 
 This section demonstrates how to configure Swashbuckle in a project that uses controller-based APIs and versioning, and how to document endpoints using standard practices.
-Go to the repository "ControllerBasedRestApi" to see an implementation example of the steps in the next section. **Change this line if the setup is shared between approaches.**
+
+### The *ControllerBasedRestApi* repository
+
+The repository [ControllerBasedRestApi](**ADD LINK**) is an integral part of this tutorial. In it you can find a working example of a C# repository taking advantage of Swashbuckle to generate API documentation.
+It is a very simple example, with the single purpose of exemplifying how to use the documentation generation tool.
+In it you will find the following components relevant for the API documentation:
+
+- Controllers/ForecastController: contains the endpoints that compose the API. It is sectioned in regions, where each regions represents a topic relevant for the API documentation, and present in the [API Guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
+- Extensions/AuthorizationServiceExtensions and /IdentityServerServiceExtensions: contain authorization-related information, relevant for the definition of the API, and some of which will be present in the API documentation.
+- Extensions/SwaggerServiceExtensions: contains configurations relevant for Swashbuckle, namely the API name (...)
+
+
 
 ## Setup and Run Swashbuckle
 
