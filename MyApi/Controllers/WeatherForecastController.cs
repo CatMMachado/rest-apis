@@ -473,7 +473,7 @@ public class WeatherForecastController : ControllerBase
     #region Internal and External APIs
     // -------------------------------------------------------------
     // Internal and External API Endpoints
-    // These endpoints demonstrate different access levels for API consumers
+    // These endpoints demonstrate different access levels using tags for documentation filtering
     // -------------------------------------------------------------
 
     /// <summary>
@@ -481,14 +481,15 @@ public class WeatherForecastController : ControllerBase
     /// </summary>
     /// <remarks>
     /// This endpoint is restricted to internal systems only and provides detailed analytics data
-    /// that should not be exposed to external clients. Requires internal scope and client type.
+    /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
     /// </remarks>
     /// <returns>Detailed internal weather analytics and system metrics.</returns>
     /// <response code="200">Returns internal analytics data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    /// <response code="403">Forbidden if the client lacks internal access privileges.</response>
+    /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
     [HttpGet("internal/analytics")]
-    [Authorize(Policy = "InternalApiAccess")]
+    [Tags("Internal")]
+    [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -538,12 +539,17 @@ public class WeatherForecastController : ControllerBase
     /// <remarks>
     /// This endpoint is available to external clients and provides a clean, 
     /// public-facing weather forecast without sensitive internal data.
+    /// Uses "External" tag for documentation filtering.
+    /// Available in both V1 and V2 for external client compatibility.
     /// </remarks>
     /// <returns>Public weather forecast data suitable for external consumption.</returns>
     /// <response code="200">Returns public weather forecast data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
     [HttpGet("external/forecast")]
-    [Authorize(Policy = "ExternalApiAccess")]
+    [Tags("External")]
+    [MapToApiVersion("1.0")]
+    [MapToApiVersion("2.0")]
+    [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [SwaggerOperation(

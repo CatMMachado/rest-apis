@@ -16,7 +16,6 @@ public static class SwaggerServiceExtensions
     /// <returns> The updated service collection with Swagger configured.</returns>
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
     {
-        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
             // Configure multiple API versions
