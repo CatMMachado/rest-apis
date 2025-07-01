@@ -19,11 +19,11 @@ public static class SwaggerServiceExtensions
 {
     services.AddSwaggerGen(options =>
     {
-        // Build a temporary provider to get API version descriptions
+        // Add support for multiple API versions
         using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        // Internal API docs for each version
+        // Generate API documents for each API version, all of them visible in Swagger UI       
         foreach (var description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc($"{description.GroupName}-internal", new OpenApiInfo
@@ -75,7 +75,7 @@ public static class SwaggerServiceExtensions
             }
         });
 
-        // OAuth2 security
+        // Configure OAuth2 security for the API document and Swagger UI
         options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
             Type = SecuritySchemeType.OAuth2,
@@ -106,10 +106,12 @@ public static class SwaggerServiceExtensions
             }
         });
 
-        // Enable annotations
+        // Enable annotations provided by Swashbuckle.AspNetCore.Annotations
         options.EnableAnnotations();
 
-        // Enable XML comments
+        // Enable XML comments in Swashbuckle's generated API documentationAdd commentMore actions
+        // This requires that the XML documentation is enable in the project file (usually by setting 
+        // <GenerateDocumentationFile>true</GenerateDocumentationFile> in the .csproj file)
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
         options.IncludeXmlComments(xmlPath);
