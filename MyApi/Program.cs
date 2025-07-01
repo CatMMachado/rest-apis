@@ -64,24 +64,28 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseIdentityServer();
 
- // Enable Swagger UI in development environment
+ // Enables functionalities related with the visualization of the API documentation in the browser, for development environments
 if (app.Environment.IsDevelopment())
 {
+    // Enables the visualization of API documentation in endpoints such as "swagger/v1/swagger.json"
     app.UseSwagger();
+
+    // Enables the interactive Swagger UI, for each version specified
     app.UseSwaggerUI(options =>
     {
-        // Internal API Documentation (Complete - for internal team)
+        // Internal API documentation versions (Complete - for internal team)
         options.SwaggerEndpoint("/swagger/v1-internal/swagger.json", "Internal API V1 - Complete (JSON)");
         options.SwaggerEndpoint("/swagger/v1-internal/swagger.yaml", "Internal API V1 - Complete (YAML)");
         options.SwaggerEndpoint("/swagger/v2-internal/swagger.json", "Internal API V2 - Complete (JSON)");
         options.SwaggerEndpoint("/swagger/v2-internal/swagger.yaml", "Internal API V2 - Complete (YAML)");
         
-        // External API Documentation (Filtered - for client delivery and external consumers)
+        // External API documentation versions (Filtered - for client delivery and external consumers)
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1 - Client (JSON)");
         options.SwaggerEndpoint("/swagger/v1/swagger.yaml", "My API V1 - Client (YAML)");
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2 - Client (JSON)");
         options.SwaggerEndpoint("/swagger/v2/swagger.yaml", "My API V2 - Client (YAML)");
         
+        // OAuth2 configuration for Swagger UI, allowing users to authenticate in the UI
         options.OAuthClientId("auth-client-id");
         options.OAuthClientSecret("your-client-secret");
         options.OAuthUsePkce();
