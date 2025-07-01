@@ -16,65 +16,106 @@ public static class SwaggerServiceExtensions
     /// <param name="services"> The service collection to add services to.</param>
     /// <returns> The updated service collection with Swashbuckle and Swagger UI configured.</returns>
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+{
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen(options =>
     {
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options =>
+        // Build a temporary provider to get API version descriptions
+        using var serviceProvider = services.BuildServiceProvider();
+        var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        // Internal API docs for each version
+        foreach (var description in provider.ApiVersionDescriptions)
         {
-            // Add support for multiple API versions
-            var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-            
-            // Generate API documents for each API version, all of them visible in Swagger UI       
-            foreach (var description in provider.ApiVersionDescriptions)
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
             {
-                options.SwaggerDoc(description.GroupName, new OpenApiInfo
-                {
-                    Title = "My API",
-                    Version = description.ApiVersion.ToString(),
-                    Description = $"Example API using local IdentityServer for authentication - Version {description.ApiVersion}"
-                });
+                Title = "My API (Internal)", // <-- Internal in the title
+                Version = description.ApiVersion.ToString(),
+                Description = $"Internal API - Version {description.ApiVersion}"
+            });
+
+            options.SwaggerDoc($"{description.GroupName}-external", new OpenApiInfo
+            {
+                Title = "My API (External)", // <-- External in the title
+                Version = description.ApiVersion.ToString(),
+                Description = $"External API - Version {description.ApiVersion}"
+            });
+        }
+
+        // Predicate to control which endpoints appear in which docs
+        options.DocInclusionPredicate((docName, apiDesc) =>
+        {
+            // Determine version group
+            var isExternalDoc = docName.EndsWith("-external");
+            var version = isExternalDoc ? docName.Replace("-external", "") : docName;
+
+            // Only include endpoints for the correct version
+            var versions = apiDesc.GroupName != null ? new[] { apiDesc.GroupName } : Array.Empty<string>();
+            var matchesVersion = versions.Contains(version);
+
+            // Get tags from [Tags] attribute
+            var tags = apiDesc.ActionDescriptor.EndpointMetadata
+                .OfType<TagsAttribute>()
+                .SelectMany(attr => attr.Tags)
+                .Select(t => t.ToString().ToLower())
+                .ToList();
+
+            bool isInternal = tags.Contains("internal");
+            bool isExternal = tags.Contains("external");
+            bool isGeneral = !isInternal && !isExternal;
+
+            if (isExternalDoc)
+            {
+                // External doc: include endpoints tagged "external" or general
+                return matchesVersion && (isExternal || isGeneral);
             }
-            // Configure OAuth2 security for the API document and Swagger UI
-            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            else
             {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
+                // Internal doc: include endpoints tagged "internal" or general
+                return matchesVersion && (isInternal || isGeneral);
+            }
+        });
+
+        // OAuth2 security
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.OAuth2,
+            Flows = new OpenApiOAuthFlows
+            {
+                ClientCredentials = new OpenApiOAuthFlow
                 {
-                    ClientCredentials = new OpenApiOAuthFlow
+                    TokenUrl = new Uri("http://localhost:5001/connect/token"),
+                    Scopes = new Dictionary<string, string>
                     {
-                        TokenUrl = new Uri("http://localhost:5001/connect/token"),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "api1", "Access to My API" }
-                        }
+                        { "api1", "Access to My API" }
                     }
                 }
-            });
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2"
-                        }
-                    },
-                    new[] { "api1" }
-                }
-            });
-
-            // Enable annotations provided by Swashbuckle.AspNetCore.Annotations
-            options.EnableAnnotations();
-
-            // Enable XML comments in Swashbuckle's generated API documentation
-            // This requires that the XML documentation is enable in the project file (usually by setting 
-            // <GenerateDocumentationFile>true</GenerateDocumentationFile> in the .csproj file)
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
+            }
         });
-        
-        return services;
-    }
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "oauth2"
+                    }
+                },
+                new[] { "api1" }
+            }
+        });
+
+        // Enable annotations
+        options.EnableAnnotations();
+
+        // Enable XML comments
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        options.IncludeXmlComments(xmlPath);
+    });
+
+    return services;
+}
 }

@@ -62,27 +62,6 @@ builder.Services.AddApiVersioning(options =>
 
 #endregion Versioning
 
-#region Internal and External APIs
-// ----------------------------------------------------------------------------
-// Internal and External APIs Configuration
-// This section configures different access levels for API consumers:
-// - Internal APIs: Restricted to internal systems and services only
-// - External APIs: Available to external clients and third-party consumers
-// ----------------------------------------------------------------------------
-
-// Configure policies for internal and external API access
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("InternalApiAccess", policy =>
-        policy.RequireClaim("scope", "api1.internal")
-              .RequireClaim("client_type", "internal"));
-    
-    options.AddPolicy("ExternalApiAccess", policy =>
-        policy.RequireClaim("scope", "api1.external"));
-});
-
-#endregion Internal and External APIs
-
 #endregion Service Registration
 
 var app = builder.Build();
@@ -99,19 +78,17 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        var provider = app.Services.GetRequiredService<Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider>();
+        // Internal API Documentation (Complete - for internal team)
+        options.SwaggerEndpoint("/swagger/v1-internal/swagger.json", "Internal API V1 - Complete (JSON)");
+        options.SwaggerEndpoint("/swagger/v1-internal/swagger.yaml", "Internal API V1 - Complete (YAML)");
+        options.SwaggerEndpoint("/swagger/v2-internal/swagger.json", "Internal API V2 - Complete (JSON)");
+        options.SwaggerEndpoint("/swagger/v2-internal/swagger.yaml", "Internal API V2 - Complete (YAML)");
         
-        foreach (var description in provider.ApiVersionDescriptions)
-        {
-            options.SwaggerEndpoint(
-                $"/swagger/{description.GroupName}/swagger.json",
-                $"My API {description.GroupName.ToUpper()} (JSON)"
-            );
-            options.SwaggerEndpoint(
-                $"/swagger/{description.GroupName}/swagger.yaml",
-                $"My API {description.GroupName.ToUpper()} (YAML)"
-            );
-        }
+        // External API Documentation (Filtered - for client delivery and external consumers)
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1 - Client (JSON)");
+        options.SwaggerEndpoint("/swagger/v1/swagger.yaml", "My API V1 - Client (YAML)");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2 - Client (JSON)");
+        options.SwaggerEndpoint("/swagger/v2/swagger.yaml", "My API V2 - Client (YAML)");
         
         options.OAuthClientId("auth-client-id");
         options.OAuthClientSecret("your-client-secret");
