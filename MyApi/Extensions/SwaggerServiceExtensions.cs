@@ -17,7 +17,6 @@ public static class SwaggerServiceExtensions
     /// <returns> The updated service collection with Swashbuckle and Swagger UI configured.</returns>
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
 {
-    services.AddEndpointsApiExplorer();
     services.AddSwaggerGen(options =>
     {
         // Build a temporary provider to get API version descriptions
