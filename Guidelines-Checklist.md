@@ -5,14 +5,14 @@ Each item below represents a guideline. At the end of each item, there's a check
 ## API Specification Type
 
 - [x] For synchronous HTTP-based APIs, OpenAPI specification version 3 or higher MUST be used.
-  _Identified in: Program.cs, SwaggerServiceExtensions.cs (`#region API Specification Setup`)_
+  _Identified in: Program.cs, SwaggerServiceExtensions.cs (`#region Setup for API Specification`)_
 - [ ] For asynchronous messaging APIs, AsyncAPI specification version 2 or higher MUST be used.
    _Not applicable (no async API in this project)_
 
 ## Format
 
 - [x] API specifications SHOULD be provided in YAML format for consistency reasons.
-  _Identified in: Program.cs (`#region API Specification Setup` and YAML endpoint)_
+  _Identified in: Program.cs (`#region Setup for API Specification` and YAML endpoint)_
 
 ## API Specification Content
 
@@ -62,11 +62,11 @@ Each item below represents a guideline. At the end of each item, there's a check
 ## API Versioning
 
 - [x] API versioning SHOULD be implemented to enable backward compatibility and smooth transitions between different versions.
-  _Identified in: Program.cs (`#region Versioning`)_
+  _Identified in: Program.cs (`#region API Versioning`)_
 - [x] Multiple versioning strategies SHOULD be supported (URL path, query string, headers).
-  _Identified in: Program.cs (`#region Versioning` - UrlSegmentApiVersionReader, QueryStringApiVersionReader, HeaderApiVersionReader)_
+  _Identified in: Program.cs (`#region API Versioning` - UrlSegmentApiVersionReader, QueryStringApiVersionReader, HeaderApiVersionReader)_
 - [x] Version-specific endpoints SHOULD be clearly documented and demonstrated.
-  _Identified in: WeatherForecastController.cs (`#region Versioning`)_
+  _Identified in: WeatherForecastController.cs (`#region API Versioning`)_
 - [x] Swagger documentation SHOULD support multiple API versions with separate documentation for each version.
   _Identified in: SwaggerServiceExtensions.cs, Program.cs (multiple SwaggerDoc configurations)_
 

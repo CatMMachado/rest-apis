@@ -7,22 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 #region Setup for Rate Limiting
-// ----------------------------------------------------------------------------
-// Setup for Rate Limiting
-// ----------------------------------------------------------------------------
 
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 builder.Services.AddInMemoryRateLimiting();
 
 #endregion Setup for Rate Limiting
 
 #region Setup for Authentication, Authorization, and IdentityServer
-// ----------------------------------------------------------------------------
-// Setup for Authentication, Authorization, and IdentityServer
-// ----------------------------------------------------------------------------
 
 builder.Services.AddCustomIdentityServer();
 builder.Services.AddCustomAuthentication();
@@ -30,18 +25,14 @@ builder.Services.AddCustomAuthorization();
 
 #endregion Setup for Authentication, Authorization, and IdentityServer
 
-#region API Specification Setup
-// ----------------------------------------------------------------------------
-// API Specification Setup
-// ----------------------------------------------------------------------------
+#region Setup for API Specification
 
 builder.Services.AddCustomSwagger();
 
 #endregion API Specification Setup
 
-#region Versioning
+#region API Versioning
 // ----------------------------------------------------------------------------
-// API Versioning Setup
 // This configuration supports three types of versioning:
 // URL path (/v1/weather), query string (?version=1.0), and header (X-Version).
 // ----------------------------------------------------------------------------
@@ -66,14 +57,15 @@ builder.Services.AddApiVersioning(options =>
 
 var app = builder.Build();
 
-#region Configure Middleware
+#region Middleware Configuration
 
 app.UseIpRateLimiting();
-app.UseAuthentication(); // Middleware for authentication
-app.UseAuthorization(); // Middleware for authorization
-app.UseIdentityServer(); // Middleware for IdentityServer
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseIdentityServer();
 
-if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environment
+ // Enable Swagger UI in development environment
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -96,7 +88,7 @@ if (app.Environment.IsDevelopment()) // Enable Swagger UI in development environ
     });
 }
 
-#endregion Configure Middleware
+#endregion Middleware Configuration
 
 #region Configure Endpoints
 
