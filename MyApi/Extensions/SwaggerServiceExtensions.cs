@@ -27,14 +27,14 @@ public static class SwaggerServiceExtensions
         // Internal API docs for each version
         foreach (var description in provider.ApiVersionDescriptions)
         {
-            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+            options.SwaggerDoc($"{description.GroupName}-internal", new OpenApiInfo
             {
                 Title = "My API (Internal)", // <-- Internal in the title
                 Version = description.ApiVersion.ToString(),
                 Description = $"Internal API - Version {description.ApiVersion}"
             });
 
-            options.SwaggerDoc($"{description.GroupName}-external", new OpenApiInfo
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
             {
                 Title = "My API (External)", // <-- External in the title
                 Version = description.ApiVersion.ToString(),
@@ -46,8 +46,8 @@ public static class SwaggerServiceExtensions
         options.DocInclusionPredicate((docName, apiDesc) =>
         {
             // Determine version group
-            var isExternalDoc = docName.EndsWith("-external");
-            var version = isExternalDoc ? docName.Replace("-external", "") : docName;
+            var isInternalDoc = docName.EndsWith("-internal");
+            var version = isInternalDoc ? docName.Replace("-internal", "") : docName;
 
             // Only include endpoints for the correct version
             var versions = apiDesc.GroupName != null ? new[] { apiDesc.GroupName } : Array.Empty<string>();
@@ -64,15 +64,15 @@ public static class SwaggerServiceExtensions
             bool isExternal = tags.Contains("external");
             bool isGeneral = !isInternal && !isExternal;
 
-            if (isExternalDoc)
+            if (isInternalDoc)
             {
-                // External doc: include endpoints tagged "external" or general
-                return matchesVersion && (isExternal || isGeneral);
+                // Internal doc: endpoints tagged "internal" or general
+                return matchesVersion && (isInternal || isGeneral);
             }
             else
             {
-                // Internal doc: include endpoints tagged "internal" or general
-                return matchesVersion && (isInternal || isGeneral);
+                // External doc: endpoints tagged "external" or general
+                return matchesVersion && (isExternal || isGeneral);
             }
         });
 

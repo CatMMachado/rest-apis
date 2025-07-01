@@ -474,7 +474,6 @@ public class WeatherForecastController : ControllerBase
     // -------------------------------------------------------------
     // Internal and External API Endpoints
     // These endpoints demonstrate different access levels using tags for documentation filtering
-    // These endpoints demonstrate different access levels using tags for documentation filtering
     // -------------------------------------------------------------
 
     /// <summary>
@@ -483,16 +482,12 @@ public class WeatherForecastController : ControllerBase
     /// <remarks>
     /// This endpoint is restricted to internal systems only and provides detailed analytics data
     /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
-    /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
     /// </remarks>
     /// <returns>Detailed internal weather analytics and system metrics.</returns>
     /// <response code="200">Returns internal analytics data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
     /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
-    /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
     [HttpGet("internal/analytics")]
-    [Tags("Internal")]
-    [Authorize(Policy = "ApiScope")]
     [Tags("Internal")]
     [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -551,10 +546,6 @@ public class WeatherForecastController : ControllerBase
     /// <response code="200">Returns public weather forecast data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
     [HttpGet("external/forecast")]
-    [Tags("External")]
-    [MapToApiVersion("1.0")]
-    [MapToApiVersion("2.0")]
-    [Authorize(Policy = "ApiScope")]
     [Tags("External")]
     [MapToApiVersion("1.0")]
     [MapToApiVersion("2.0")]
