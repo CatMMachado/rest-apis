@@ -1,5 +1,6 @@
 using AspNetCoreRateLimit;
 using Asp.Versioning;
+using MyApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,8 @@ builder.Services.AddCustomAuthorization();
 // API Specification Setup
 // ----------------------------------------------------------------------------
 
-builder.Services.AddCustomSwagger();
+// Swagger configuration is handled in the "Internal and External APIs" section
+// to support separate documentation for internal and external consumers
 
 #endregion API Specification Setup
 
