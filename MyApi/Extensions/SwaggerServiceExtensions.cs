@@ -109,7 +109,7 @@ public static class SwaggerServiceExtensions
         // Enable annotations provided by Swashbuckle.AspNetCore.Annotations
         options.EnableAnnotations();
 
-        // Enable XML comments in Swashbuckle's generated API documentationAdd commentMore actions
+        // Enable XML comments in Swashbuckle's generated API documentation
         // This requires that the XML documentation is enable in the project file (usually by setting 
         // <GenerateDocumentationFile>true</GenerateDocumentationFile> in the .csproj file)
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
