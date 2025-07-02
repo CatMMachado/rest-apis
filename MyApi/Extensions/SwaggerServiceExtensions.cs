@@ -48,9 +48,9 @@ public static class SwaggerServiceExtensions
             var isInternalDoc = docName.EndsWith("-internal");
             var version = isInternalDoc ? docName.Replace("-internal", "") : docName;
 
-            // Only include endpoints for the correct version
-            var versions = apiDesc.GroupName != null ? new[] { apiDesc.GroupName } : Array.Empty<string>();
-            var matchesVersion = versions.Contains(version);
+            // This will match endpoints with no group (general) or with the correct version
+            var matchesVersion = string.IsNullOrEmpty(apiDesc.GroupName) ||
+                         string.Equals(apiDesc.GroupName, version, StringComparison.OrdinalIgnoreCase);
 
             // Get tags from [Tags] attribute
             var tags = apiDesc.ActionDescriptor.EndpointMetadata
