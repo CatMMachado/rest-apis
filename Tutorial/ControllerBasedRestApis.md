@@ -82,5 +82,6 @@ To see your new API documentation in Backstage, follow the instructions in secti
 
 ## Swashbuckle and the API Guidelines
 
-This section describes how to use Swashbuckle to extend your current API documentation, so that it complies with your company's [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
+This section describes how to use Swashbuckle to extend your current API documentation, so that it complies with your company's [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines), generating clear, interactive, and well-structured API documentation.
 
+To keep the explanation simple and focused, we will cover each guideline, highlighting how Swashbuckle (always referring to the accompanying repository), can help.
