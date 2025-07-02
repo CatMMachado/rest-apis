@@ -57,7 +57,7 @@ public class WeatherForecastController : ControllerBase
     /// Get a weather forecast with rate limiting.
     /// Test with:
     /// curl -X GET http://localhost:5000/weather/limited
-    /// More then 5 requests for minut will return a 429 error (Too Many Requests).
+    /// More then 5 requests per minute will return a 429 error (Too Many Requests).
     /// </summary>
     /// <remarks>
     /// This endpoint is protected by a rate limiting policy (e.g., fixed window, sliding window, etc.).
@@ -98,7 +98,7 @@ public class WeatherForecastController : ControllerBase
     /// <response code="200">Returns the list of weather forecasts.</response>
     [HttpGet("public")]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WeatherForecast))]
     public IActionResult GetPublic()
     {
         var forecast = GenerateForecast();
@@ -204,7 +204,7 @@ public class WeatherForecastController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WeatherForecast))] // The "Type" parameter specifies the type of the response body.
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))] // The "Type" parameter specifies the type of the error response body.
-
+    [Produces("application/json")]
     public IActionResult GenerateCustomForecast([FromBody] WeatherForecast request)
     {
         if (request == null || string.IsNullOrWhiteSpace(request.Summary))
