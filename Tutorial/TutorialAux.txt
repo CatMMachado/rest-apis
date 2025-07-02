@@ -1,0 +1,111 @@
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/tree/review?ref_type=heads
+
+Overview:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/overview.md
+
+- Common API Guidelines (content list below): read
+- REST API Guidelines
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md]
+- Async API Guidelines
+
+
+Common API Guidelines:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/nav.md
+
+- Introduction: read
+- API Lifecycle Phases: read
+    Related:
+    - Guideline API Versioning: read
+    (https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-versioning.md)
+    - Guideline API Version in HTTP Requests (is a subset of the previous one) : read
+- API specification (link below): read
+- API documentation (link below): read
+- API versioning (it's the same as above): read
+- JSON Property Naming: read
+- HTTP-based API Protection: read
+    Related:
+    - SGRE API Security => Este link está incompleto! Não dá para aceder.
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/http-api-protection.md]
+
+API Specification:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md
+
+API Documentation:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md
+
+
+
+--
+For the tutorial:
+
+- Refer the concrete pages of the API Guidelines repo from which the information referred comes from
+
+- Version number format:
+    <MAJOR>.<MINOR>.<PATCH> ; example 1.0.4
+    Pre-release versions: <MAJOR>.<MINOR>.<PATCH>-<pre-release>; Examples: 1.0.0-alpha, 1.0.0-alpha.1, 1.0.0-0.3.7
+1. "If API implementation allows calling it without version and when no version is specified, API compatible to first release is used."
+2. Option 1 -  API version in URI path
+"example: https://example.com/myapi/v1/<resource-name>
+Where v1 represents Major version 1, the latest minor version and the latest patch version in that minor version."
+3. Option 2 - API version in custom request header
+"The header has the form Api-Version: <MAJOR>."
+4. API Version in HTTP Responses
+"A header with full semantic version value SHOULD be returned in the response e.g., Api-Version: <MAJOR>.<MINOR>.<PATCH>."
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-versioning.md]
+
+- API specification:
+1. "APIs MUST come with API specifications as means of detailed technical documentation. 
+For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used. 
+For asynchronous messaging APIs, AsyncAPI specifications of at least version 2 MUST be used. 
+The API specifications SHOULD be provided in YAML format for consistency reasons."
+1.1. Tendo em conta que as guidelines pedem YAML, vamos retirar a opção de geração de JSON.
+
+2. API specification content:
+- fully defined request and response, or message schemas
+- header, query, and path parameter details including allowed values and default values
+- details on error response status codes, error schemas, error types, and a clear association of errors to operations
+- restrictions with respect to format, character or number range of parameters and properties
+- restrictions with respect to number of array items or additional properties
+- examples for all parameters and request/response bodies
+- descriptions and summaries SHOULD contain meaningful additional information to already existing information such as the names of properties, parameters, or operations
+- limits which are dependent on the used service plan, acquired quota, the service region or deployment environment MAY be mentioned in the API specification, but their concrete values SHOULD NOT be added to an API specification (see service usage limits in API Documentation).
+- deprecation notes, see below
+
+3. Deprecation notes:
+"OpenAPI or AsyncAPI properties "description" and "deprecated" SHOULD be used, if applicable."
+"Deprecation notes SHOULD mention which other API or part of an API should be used instead of the deprecated one."
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md]
+
+- API documentation
+"The individual service documentation consists of the following parts:
+1. Service introduction
+2. API specifications:
+2.1 "Visualizations for each API specification MUST be provided, e.g., in form of Swagger UI or generated AsyncAPI HTML pages."
+3. Access control: "(...) Permissions MUST be documented with clear association to API operations in the corresponding API specification or in separate documents, as appropriate."
+4. Service usage limits:
+4.1. "The service documentation SHOULD describe existing usage limits and provide limit values for static limits."
+4.2. "API parameter or body property format limits MUST be described in the API specification."
+(Etc.)
+
+- HTTP-based API Protection
+1. "APIs MUST adhere to OAuth 2.0 Bearer Token Usage (...)"
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/http-api-protection.md]
+
+- Referir quando os tópicos não são suportados pela OpenAPI, mas que podem ser indicados nos campos "description". Ex., rate limits.
+- Referir que o tutorial apenas se refere àquilo que no repo das guidelines chamam de "API specification", que é a parte técnica. Esta especificação é um dos componentes daquilo que as guidelines chamam de "API documentation".
+[https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md & https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md]
+- In the minimal API approach we don't need to exlicitly state that the media type is "application/json". But in the controller-based, if we don't add "[Produces("application/json")]" to the endpoint, the specification will contains 3 options for the media type.
+1. Add this "produces" attribute to every endpoint.
+
+- REST API Guidelines
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md:
+1. "It is recommended using the media type application/json for exchanging data."
+2. "The root of every document SHOULD contain a JSON object." => Temos um exemplo em que o endpoint retorna um String. Remover o alterar para objeto.
+
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/common-operations.md:
+3. "Updating fields of a resource SHOULD use the HTTP verb PATCH for request" => Testar isto.
+3.1. In case of trying to update an non-existing resource, return a 404 error.
+4. When performing a Put, Patch or Delete , if no return object is provided, use the code 204 instead of 200.
+5. "Updating resources by replacing them MUST use the HTTP verb PUT for request". This means changing all the fields in the resource and not just some of them.
+
+

@@ -20,12 +20,21 @@ The repository [ControllerBasedRestApi](**ADD LINK**) is an integral part of thi
 It is a very simple example, with the single purpose of exemplifying how to use the documentation generation tool.
 In it you will find the following components relevant for the API documentation:
 
-- Controllers/ForecastController: contains the endpoints that compose the API. It is sectioned in regions, where each regions represents a topic relevant for the API documentation, and present in the [API Guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
-- Extensions/AuthorizationServiceExtensions and /IdentityServerServiceExtensions: contain authorization-related information, relevant for the definition of the API, and some of which will be present in the API documentation.
-- Extensions/SwaggerServiceExtensions: contains configurations relevant for Swashbuckle, namely the API name (...)
+- `Controllers/ForecastController`: contains the endpoints that compose the API. It is sectioned in regions, where each regions represents a topic relevant for the API documentation, and present in the [API Guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
+- `Extensions/AuthorizationServiceExtensions`, `Extensions/IdentityServerServiceExtensions` and `IdentityServerConfig`: contain authorization-related information, relevant for the definition of the API, and some of which will be present in the API documentation.
+- `Extensions/SwaggerServiceExtensions`: contains configurations relevant for Swashbuckle and Swagger UI. It includes adding the support for the coexistence of multiple API versions, and enabling the annotations provided by the package `Swashbuckle.AspNetCore.Annotations`.
+- `Program.cs`: relevant for the documentation, there are the following regions:
+  - `Setup for Rate Limiting`: this is necessary to setup rate limiting in the repository, and it is relevant for the documentation in the sense that the rate limitings you configure in your code, will be reflected in the documentation and Swagger UI.
+  - `Setup for Authentication, Authorization, and IdentityServer`: necessary to setup authentication and authorization in the repository, which will be reflected in the documentation and when interacting with Swagger UI.
+  - `Setup for API Specification`: this adds to the application the extension methods defined at `Extensions/SwaggerServiceExtensions`
+  - `API Versioning`: this region adds the necessary configurations to work with different versions of an API. In particular, it adds:
+    - Support to 3 different approaches in terms of how the version number is represented: in the API URL, as a query parameter, ans as a header. In your repository, you only have to follow one of these approaches. **Do the guidelines refer which approach to follow? Say it here, or just refer that each approach has advantges and disadvantages, but that that is outside of the scope of the tutorial.**
+    - A default version, meaning that, unless you indicate otherwise in your endpoints, all of them will be considered as part of this version.
+    - The format of the version name, e.g., `v3`.
+  - `Middleware Configuration`: this region includes the final steps in setting up Swashbuckle and Swagger UI. (...)
 
-
-
+**Add somewhere that the setting up of Swashbuckle and Swagger UI is done in several locations, and which are relevant for what, and which can be skipped.**
+  
 ## Setup and Run Swashbuckle
 
 ### Install Swashbuckle and other required packages
@@ -61,7 +70,7 @@ dotnet add package Microsoft.AspNetCore.OpenApi
 - Add the contents of `SwaggerServiceExtension.AddCustomSwagger()` to your repository
 - Integrate these extensions into your application as shown in section `API Specification Setup` of `Program.cs`
 
-2. To develop and test the API documentation, enable Swagger and he Swagger UI in the development environment, as shown in section `Configure Middleware` of `Program.cs`.
+2. To develop and test the API documentation, enable Swagger and he Swagger UI in the development environment, as shown in section `Middleware Configuration` of `Program.cs`.
 In this secttion you can see that an URL is being defined to show the API specification files, both in yaml and json format.
 
 ### Enable XML Comments for Endpoint Documentation

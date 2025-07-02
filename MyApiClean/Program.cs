@@ -30,7 +30,7 @@ builder.Services.AddCustomAuthorization();
 
 #endregion Setup for Authentication, Authorization, and IdentityServer
 
-#region Versioning
+#region API Versioning
 // ----------------------------------------------------------------------------
 // API Versioning Setup
 // This configuration supports three types of versioning:
@@ -57,14 +57,14 @@ builder.Services.AddApiVersioning(options =>
 
 var app = builder.Build();
 
-#region Configure Middleware
+#region Middleware Configuration
 
 app.UseIpRateLimiting();
 app.UseAuthentication(); // Middleware for authentication
 app.UseAuthorization(); // Middleware for authorization
 app.UseIdentityServer(); // Middleware for IdentityServer
 
-#endregion Configure Middleware
+#endregion Middleware Configuration
 
 #region Configure Endpoints
 
