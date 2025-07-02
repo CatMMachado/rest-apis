@@ -1,0 +1,13 @@
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/tree/review?ref_type=heads
+
+Overview:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/overview.md
+
+Common API Guidelines:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/nav.md
+
+API Specification:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md
+
+API Documentation:
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md
