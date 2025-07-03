@@ -100,12 +100,53 @@ The API specifications SHOULD be provided in YAML format for consistency reasons
 - REST API Guidelines
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md:
 1. "It is recommended using the media type application/json for exchanging data."
-2. "The root of every document SHOULD contain a JSON object." => Temos um exemplo em que o endpoint retorna um String. Remover o alterar para objeto.
+2. "The root of every document SHOULD contain a JSON object." => Temos um exemplo em que o endpoint retorna uma String.
 
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/common-operations.md:
 3. "Updating fields of a resource SHOULD use the HTTP verb PATCH for request" => Testar isto.
 3.1. In case of trying to update an non-existing resource, return a 404 error.
 4. When performing a Put, Patch or Delete , if no return object is provided, use the code 204 instead of 200.
-5. "Updating resources by replacing them MUST use the HTTP verb PUT for request". This means changing all the fields in the resource and not just some of them.
+5. "Updating resources by replacing them MUST use the HTTP verb PUT for request". This applies when changing all the fields in the resource and not just some of them.
 
+- Change our examples' context from "Weather" to "Device", to be aligned with the API guidelines.
+Examples:
+Get Device; Get Devices; Post Device; Etc.
+Device:
+name
+deviceType:
+    id
+    name
+dimension:
+    widht
+    height
+    depth
 
+- Bulk operations
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/bulk-operations.md:
+"A bulk operation (except GET) SHOULD be indicated explicitly via the media type application/vnd.sgre.bulk+json"
+"Note that the data property is an array(...)"
+
+- Sparse fieldsets 
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/sparse-fieldsets.md:
+"Sparse fieldsets MUST be defined via the fields query parameter"
+Example: "GET /articles?fields=title,body,comments HTTP/1.1"
+Use this as an example of a parameter
+2. "The fields parameter SHOULD be optional."
+3. "You might consider defining and documenting a default value for the fields parameter, so that API clients can adjust this value to their needs if required."
+4. "If an invalid fields expression is set (including a fields expression consisting of space characters only), a response with the status code 400 Bad Request SHOULD be returned."
+
+- Sorting 
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/sorting.md:
+"An API provider has the possibility to specify in the API specification, which fields are supported to sort the collection in the response."
+"If the API restricts the sort functionality on dedicated fields (i.e. member of a resource), these "sort fields" MUST be documented in the API specification. 
+"The value for sort MUST represent sort fields." Example:  GET /devices?sort=age
+"API SHOULD support defining the sort order for each sort field individually"
+"An API MAY support the customization of the sorting order. The API client MAY prefix the sort field with a minus (U+002D HYPHEN-MINUS, "-") for descending and plus (U+002B PLUS SIGN, "+") for ascending order."
+Example: 
+GET /devices?sort=-created
+    The above example should return the newest devices first, because it is in descending sort order.
+            GET /devices?sort=+created
+        The above example should return the oldest devices first, because it is in ascending sort order.
+5. "The default sort order MUST be ascending as if a + is specified"
+
+- Some of the guidelines are generic and not just for RESt. We need to make this clear.

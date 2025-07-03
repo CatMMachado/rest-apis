@@ -2,7 +2,7 @@
 
 **TO DECIDE:**
 **- Confirm that the setup is the same for controller-based and minimal APIs, and extract the setting up section.**
-**- Depending on how long this section ends up to be, create file for setting up and guideliens.**
+**- Depending on how long this section ends up to be, create file for setting up and guidelines.**
 
 ## Introduction
 
@@ -43,11 +43,10 @@ In it you will find the following components relevant for the API documentation:
 **Note:**
 The setup of Swashbuckle and Swagger UI is distributed across several files in this repository, each with a specific role in the documentation process:
 
-  - The main configuration for Swagger and API documentation generation is located in `Extensions/SwaggerServiceExtensions`. This section explains how to enable support for multiple API versions, add annotations, and configure security settings.
-  + The integration of these configurations into the application takes place in `Program.cs`, specifically within the regions labeled `Setup for API Specification` and `Middleware Configuration`. These sections enable Swagger and Swagger UI at runtime, making the documentation accessible through the browser.
-  - Additional documentation enrichment is configured in the project file `<AppName>.csproj`. This includes enabling XML comments for controllers and models to enhance the generated documentation.
+- The main configuration for Swagger and API documentation generation is located in `Extensions/SwaggerServiceExtensions`. This section explains how to enable support for multiple API versions, add annotations, and configure security settings.
+- The integration of these configurations into the application takes place in `Program.cs`, specifically within the regions labeled `Setup for API Specification` and `Middleware Configuration`. These sections enable Swagger and Swagger UI at runtime, making the documentation accessible through the browser.
+- Additional documentation enrichment is configured in the project file `<AppName>.csproj`. This includes enabling XML comments for controllers and models to enhance the generated documentation.
 
-  
 ## Setup and Run Swashbuckle
 
 ### Install Swashbuckle and other required packages

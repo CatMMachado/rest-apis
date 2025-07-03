@@ -1,6 +1,5 @@
 For each guideline, you’ll find a short explanation and a reference to the file and region in this repository where you can see how it’s implemented.
 
-
 ---
 
 1. **OpenAPI Specification (version 3 or higher)**  
@@ -16,7 +15,7 @@ For each guideline, you’ll find a short explanation and a reference to the fil
    *See*: `Program.cs` (`#region API Specification Setup` and YAML endpoint)
 
 3. **Distinction between internal and external APIs**  
-   To distinguish internal from external APIs, use tags or `[ApiExplorerSettings(IgnoreApi = true)]` for internal endpoints.  
+   To distinguish internal from external APIs, use tags or `[ApiExplorerSettings(IgnoreApi = true)]` for internal endpoints.  **Não temos ApiExplorerSettings no repo, não estamos a explicar isto.**
    *See*: `WeatherForecastController.cs` (`#region Internal vs. External API Distinction`)
 
 4. **Syntactic and Semantic Information**  
@@ -36,7 +35,7 @@ For each guideline, you’ll find a short explanation and a reference to the fil
    *See*: `WeatherForecastController.cs` (`#region Parameter Restrictions and Defaults`)
 
 8. **Service Limits**  
-   Mention service plan, quota, or environment-based limits in your documentation, but do not include concrete values.  
+   Mention service plan, quota, or environment-based limits in your documentation, but do not include concrete values.  **Reescrever para clarificar a diferença entre "documentation" and "specification" que é indicada nas guidelines. Isto já terá de vir de trás.**
    *See*: `Program.cs` and `WeatherForecastController.cs` (`#region Service Usage Limits`)
 
 9. **Deprecation Notes**  
@@ -45,16 +44,11 @@ For each guideline, you’ll find a short explanation and a reference to the fil
 
 10. **API Versioning**  
     Implement API versioning using versioning libraries and document version-specific endpoints and strategies.  
-    *See*: `Program.cs` (`#region Versioning`), `WeatherForecastController.cs` (`#region Versioning`), and `SwaggerServiceExtensions.cs` (multiple SwaggerDoc configurations)
+    *See*: `Program.cs` (`#region Versioning`), `WeatherForecastController.cs` (`#region Versioning`), and `SwaggerServiceExtensions.cs` (multiple SwaggerDoc configurations) **Rever a refª a SwaggerDoc para OpenAPI/Swashbuckle.**
 
 11. **Security (OAuth2, Scopes)**  
     Configure OAuth2 authentication and document required scopes in the OpenAPI specification.  
     *See*: `Program.cs`, `AuthorizationServiceExtensions.cs`, and `IdentityServerServiceExtensions.cs` (`#region Security (OAuth2, Scopes)`)
-
-
-
-
-
 
 12. **Service Introduction**  
     Provide a brief description of your service, its main features, and intended audience.  
