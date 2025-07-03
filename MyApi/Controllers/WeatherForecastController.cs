@@ -37,7 +37,6 @@ public class WeatherForecastController : ControllerBase
         Description = "Returns a message after receiving a custom header"
     )]
     [ProducesResponseType(typeof(string), 200)]
-    [Produces("application/json")]
     public IActionResult GetWithCustomHeader(
         [FromHeader(Name = "X-Custom-Header")]
         [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
@@ -76,6 +75,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get weather forecast with rate limiting",
         Description = "This endpoint demonstrates the use of rate limiting policies. If you exceed the quota, it returns status 429."
     )]
+    [Produces("application/json")]
     public IActionResult GetWithRateLimit()
     {
         var forecast = GenerateForecast();
@@ -99,6 +99,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("public")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WeatherForecast))]
+    [Produces("application/json")]
     public IActionResult GetPublic()
     {
         var forecast = GenerateForecast();
@@ -118,6 +119,7 @@ public class WeatherForecastController : ControllerBase
     [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Produces("application/json")]
     public IActionResult GetPrivate()
     {
         var username = User.Identity?.Name ?? "No name provided";
@@ -147,6 +149,7 @@ public class WeatherForecastController : ControllerBase
     [Obsolete("This endpoint is deprecated. Please use /weather/public instead.")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status410Gone)]
+    [Produces("application/json")]
     public IActionResult GetDeprecated()
     {
         return StatusCode(StatusCodes.Status410Gone, new
@@ -171,6 +174,7 @@ public class WeatherForecastController : ControllerBase
     [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     public IActionResult GenerateCustomForecast([FromBody] CustomForecastRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Summary))
@@ -236,6 +240,7 @@ public class WeatherForecastController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     public IActionResult GenerateForecastWithParams(
         [FromBody] WeatherForecast request,
         [FromQuery] string location,
@@ -290,6 +295,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Delete a weather forecast by ID and date",
         Description = "Deletes a weather forecast based on the provided ID and date. The date must be in the format yyyy-MM-dd."
     )]
+    [Produces("application/json")]
     public IActionResult DeleteForecast(
         [FromRoute, SwaggerParameter(Description = "The ID of the weather forecast to delete (default: 1).")]
         [DefaultValue(2)] int id, // Default value for ID
@@ -339,6 +345,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get weather forecast (V1 only)",
         Description = "This endpoint is exclusive to API version 1.0 and returns basic weather data."
     )]
+    [Produces("application/json")]
     public IActionResult GetWeatherV1Only()
     {
         var forecast = new
@@ -369,6 +376,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get advanced weather forecast (V2 only)",
         Description = "This endpoint is exclusive to API version 2.0 and returns enhanced weather data with additional features."
     )]
+    [Produces("application/json")]
     public IActionResult GetWeatherV2Only()
     {
         var forecast = new
@@ -416,10 +424,11 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get weather summary (V1 and V2)",
         Description = "This endpoint is available in both versions but returns different data structures based on the API version."
     )]
+    [Produces("application/json")]
     public IActionResult GetWeatherSummary()
     {
         var requestedVersion = HttpContext.GetRequestedApiVersion();
-        
+
         if (requestedVersion?.MajorVersion == 1)
         {
             // V1 response - simple structure
@@ -497,6 +506,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get internal weather analytics (Internal API)",
         Description = "Restricted endpoint that provides detailed weather analytics for internal systems only."
     )]
+    [Produces("application/json")]
     public IActionResult GetInternalAnalytics()
     {
         var internalData = new
@@ -556,6 +566,7 @@ public class WeatherForecastController : ControllerBase
         Summary = "Get public weather forecast (External API)",
         Description = "Public endpoint that provides weather forecast data for external clients and third-party integrations."
     )]
+    [Produces("application/json")]
     public IActionResult GetExternalForecast()
     {
         var externalData = new
