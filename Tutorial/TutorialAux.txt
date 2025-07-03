@@ -4,9 +4,10 @@ Overview:
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/overview.md
 
 - Common API Guidelines (content list below): read
-- REST API Guidelines
+- REST API Guidelines - read
 [https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md]
 - Async API Guidelines
+- gRPC
 
 
 Common API Guidelines:
@@ -150,3 +151,26 @@ GET /devices?sort=-created
 5. "The default sort order MUST be ascending as if a + is specified"
 
 - Some of the guidelines are generic and not just for RESt. We need to make this clear.
+
+- API Security
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/security.md
+Como falado na daily, nós não queremos ter uma implementação 100% funcional. Em concreto no cado de autenticação, rate limiting, estamos a adicionar o necessário para vermos como este tipo de informação se adiciona à API specification.
+Quando falarmos do(s) repositórios pela 1ª vez, vamos explicar esta decisão de design.
+Relembraremos o tema sempre que necessário.
+
+- Best practices
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/best-practices.md
+
+"APIs SHOULD use level 3, making use of [/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md#mediatyperule101.5]links for hypermedia controls. This is a very efficient way for expressing relationships to other REST resources."
+Não é feito out of the box pelo Swashbuckle. A forma mais fácil é adicioná-los à mão após a geração do documento com a spec.
+Exemplo: ver chatGpt
+1.1 "If there are reasons for not using hypermedia, at least level 2 should be used."
+
+- Frisar que o foco do tutorial foi na utilização da tool e daquilo que ela consegue adicionar/gerar com base no código existente. Foi por decisão que não foram adicionadas abordagens para extender as atuais funcionalidades, uma vez que elas são suficientes para cumprir com o pedido nas API guidelines.
+Ex., de coisa pedida e não suportada: links para coneção entre recursos indicados no Richardson's maturity level 3.
+
+- Data types
+https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/datatypes.md
+
+"It is recommended to use the "format" property in OpenAPI to enable validation and interoperability between client and server."
+The property "format" is automatically added to the specification, based on the data types defined in your code.
