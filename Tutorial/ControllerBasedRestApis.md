@@ -16,18 +16,14 @@ Controller-based APIs follow the traditional ASP.NET Core MVC pattern, where rou
 This section demonstrates how to configure Swashbuckle in a project that uses controller-based APIs and versioning, and how to document endpoints using standard practices.
 
 ## Code Regions and Guideline Mapping
-The code in the repository is organized using #region blocks to facilitate a clear connection between specific API guidelines, present in this tutorial, and their implementation in the codebase. Each region is labeled according to a relevant topic or guideline area.
-
-This structure enables straightforward navigation and searching within the code, allowing readers to quickly identify where and how each guideline is addressed. The region names correspond directly to guideline topics, making it easier to verify compliance and understand the rationale behind each code section.
+The code in the repository is organized using #region blocks to facilitate a clear connection between specific API guidelines, present in this tutorial, and their implementation in the codebase. Each region is labeled according to a relevant topic or guideline area. This structure enables straightforward navigation and searching within the code, allowing readers to quickly identify where and how each guideline is addressed. The region names correspond directly to guideline topics, making it easier to verify compliance and understand the rationale behind each code section.
 
 For example:
 
-#region Service Usage Limits includes logic and documentation for rate limiting.
-#region Deprecation Notes provides information about deprecated endpoints or features.
-#region Error Response Schema documents the structure of error responses.
-#region API Versioning shows how versioning is configured and applied.
-
-This approach transforms the codebase into a practical reference for guideline adherence, supporting both maintainability and ease of review. Region names can also be used as keywords for efficient searching and cross-referencing between the tutorial and the implementation.
+  - #region Service Usage Limits includes logic and documentation for rate limiting.
+  - #region Deprecation Notes provides information about deprecated endpoints or features.
+  - #region Error Response Schema documents the structure of error responses.
+  - #region API Versioning shows how versioning is configured and applied.
 
 ### The *ControllerBasedRestApi* repository
 
