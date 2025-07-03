@@ -3,6 +3,7 @@
 **TO DECIDE:**
 **- Confirm that the setup is the same for controller-based and minimal APIs, and extract the setting up section.**
 **- Depending on how long this section ends up to be, create file for setting up and guidelines.**
+**- Check whether we should keep version control package references.**
 
 ## Introduction
 
@@ -38,14 +39,14 @@ In it you will find the following components relevant for the API documentation:
 
   **ToDo:Is the auth part really working in the UI? From what I recall, no. Consider removing this from Program.cs?**
   **ToDo:Confirm that all this is applicable also in Backstage.**
-  **ToDo:Add somewhere that the setting up of Swashbuckle and Swagger UI is done in several locations, and which are relevant for what, and which can be skipped.**
+  **ToDo:Add somewhere that the setting up of Swashbuckle and Swagger UI is done in several locations, and which are relevant for what, and which can be skipped. Check the following note ↓**
 
-**Note:**
+  **Note:**
 The setup of Swashbuckle and Swagger UI is distributed across several files in this repository, each with a specific role in the documentation process:
 
-- The main configuration for Swagger and API documentation generation is located in `Extensions/SwaggerServiceExtensions`. This section explains how to enable support for multiple API versions, add annotations, and configure security settings.
-- The integration of these configurations into the application takes place in `Program.cs`, specifically within the regions labeled `Setup for API Specification` and `Middleware Configuration`. These sections enable Swagger and Swagger UI at runtime, making the documentation accessible through the browser.
-- Additional documentation enrichment is configured in the project file `<AppName>.csproj`. This includes enabling XML comments for controllers and models to enhance the generated documentation.
+  - The main configuration for Swagger and API documentation generation is located in `Extensions/SwaggerServiceExtensions`. This section explains how to enable support for multiple API versions, add annotations, and configure security settings.
+  - The integration of these configurations into the application takes place in `Program.cs`, specifically within the regions labeled `Setup for API Specification` and `Middleware Configuration`. These sections enable Swagger and Swagger UI at runtime, making the documentation accessible through the browser.
+  - Additional documentation enrichment is configured in the project file `<AppName>.csproj`. This includes enabling XML comments for controllers and models to enhance the generated documentation.
 
 ## Setup and Run Swashbuckle
 
@@ -72,8 +73,19 @@ dotnet add package Microsoft.AspNetCore.OpenApi
 
 2. Confirm that the packages were added to your `<AppName>.csproj`.
 
-**TO DO:**
-**Reorder csproj to be according to this list of packages.**
+### Purpose of Installing Swagger UI
+Swagger UI offers an interactive, browser-based interface for API documentation.
+Enabling Swagger UI in a project improves visibility, collaboration, and maintainability of APIs by:
+
+  - Providing a clear overview of all available API endpoints, including parameters, request and response formats, and authentication requirements.
+
+  - Allowing endpoints to be tested directly in the browser, streamlining development workflows and supporting faster debugging and onboarding.
+
+  - Ensuring that documentation remains aligned with the implementation, as Swagger UI renders the OpenAPI specification directly from the codebase.
+
+  - Centralizing API information in a single, accessible source, reducing ambiguity and improving communication across teams.
+
+Swagger UI transforms static API definitions into an interactive and easily navigable interface, improving both usability and long-term maintainability.
 
 ### Configure Swagger
 
