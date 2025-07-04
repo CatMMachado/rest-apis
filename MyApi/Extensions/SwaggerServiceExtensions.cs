@@ -23,7 +23,7 @@ public static class SwaggerServiceExtensions
         using var serviceProvider = services.BuildServiceProvider();
         var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        // Generate API documents for each API version, all of them visible in Swagger UI       
+        // Generate API documents for each API version, all of them visible on Swagger UI       
         foreach (var description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc($"{description.GroupName}-internal", new OpenApiInfo
@@ -41,7 +41,7 @@ public static class SwaggerServiceExtensions
             });
         }
 
-        // Predicate to control which endpoints appear in which docs
+        // Predicate to control which endpoints are added to different specification documents
         options.DocInclusionPredicate((docName, apiDesc) =>
         {
             // Determine version group

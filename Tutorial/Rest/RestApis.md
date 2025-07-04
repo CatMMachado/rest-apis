@@ -4,7 +4,7 @@
 
 REST APIs are one of the most common architectures in .NET backend development. ASP.NET Core offers a powerful and flexible way to expose HTTP endpoints, and documenting these APIs is essential for both internal collaboration and external consumption.
 
-In this section, we focus on generating and customizing API documentation for REST services using **Swashbuckle**, a popular library that integrates Swagger/OpenAPI tooling into ASP.NET Core applications.
+In this section, we focus on generating and customizing API specifications for REST services using **Swashbuckle**, a popular library that integrates Swagger/OpenAPI tooling into ASP.NET Core applications.
 
 ### Swashbuckle
 
@@ -42,9 +42,9 @@ public class ProductsController : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetProducts()
+    public IActionResult GetDevices()
     {
-        return Ok(new[] { "Product A", "Product B" });
+        return Ok(new[] { "Device A", "Device B" });
     }
 }
 ```
@@ -56,13 +56,13 @@ Minimal APIs offer a concise, function-based syntax, typically using method chai
 Example:
 
 ```csharp
-app.MapGet("/products", () =>
+app.MapGet("/devices", () =>
 {
-    return Results.Ok(new[] { "Product A", "Product B" });
+    return Results.Ok(new[] { "Device A", "Device B" });
 })
-.WithName("GetProducts")
+.WithName("GetDevices")
 .Produces<string[]>(StatusCodes.Status200OK)
-.WithTags("Product Endpoints");
+.WithTags("Device Endpoints");
 ```
 
 ##### Key Differences for Documentation
@@ -77,9 +77,10 @@ app.MapGet("/products", () =>
 | Response content | [Produces("application/json")] | .Produces<...>("application/json") |
 | Authorization Metadata | [Authorize] | .RequireAuthorization() |
 
-### Next steps
+## Next steps
 
-The next sections will guide you through the concrete setup of Swashbuckle in your .NET project and show you how to document your endpoints depending on the approach you’ve adopted.
+In your repository you will be following one of these approaches.
+Go to the corresponding section to start diving into the technical details on how to create an API specification with Swashbuckle:
 
-A demo repository is available to illustrate how Swashbuckle is applied to both controller-based APIs and Minimal APIs, respectively called "ControllerBasedRestApi" and "MinimalRestApi".
-This tutorial will reference those repositories in the subsequent examples.
+- [Controller-based REST API](ControllerBasedApi/index.md#introduction)
+- [Minimal-approach REST API](minimalApproach/index.md#introduction)

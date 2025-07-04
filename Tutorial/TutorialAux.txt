@@ -39,7 +39,8 @@ https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/revi
 --
 For the tutorial:
 
-- Refer the concrete pages of the API Guidelines repo from which the information referred comes from
+- Refer the concrete pages of the API Guidelines repo from which the information referred comes from.
+Decision: Refer the pages so that the users can follow a link. If it changes, they'll have to use the URL as reference as I did.
 
 - Version number format:
     <MAJOR>.<MINOR>.<PATCH> ; example 1.0.4

@@ -1,15 +1,17 @@
-# Common API Guidelines – Checklist
+# The API Guidelines in a controller-based API
 
-## Overview
+## Introduction
 
-This checklist provides a practical guide for implementing comprehensive API documentation using Swashbuckle/OpenAPI in .NET projects. Each guideline reflects industry best practices for creating well-documented, maintainable, and developer-friendly APIs.
+The goal of this section is assist you in using Swashbuckle in a controller-based API to generate an API specification as complete as possible, by following yor company's [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
 
-Each item includes:  
-- **Guideline statement** with priority level (MUST/SHOULD/MAY)  
-- **Checkbox** to track implementation status (`[x]` fulfilled, `[ ]` pending)  
-- **Implementation reference** pointing to specific code regions in the companion project  
+An important distinction made in that repository is that an "API Documentation" refers to the full documentation of a service, which must contain "API specifications" for each major API version offered by that service [1], in addition to other parts.
 
-Use this checklist to ensure your API documentation meets professional standards and delivers an excellent developer experience.
+Since the focus of this tutorial is on the "API specification", in this section we will also focus on the components referenced in the API guidelines that MUST and SHOULD be added to your API specification.
+
+However, and for the sake of completion, we have included components referred in the guidelines in sections other than the one detailing the content of an "API specification".
+
+(...)
+
 
 ---
 
@@ -189,3 +191,8 @@ Use this checklist to ensure your API documentation meets professional standards
 - **XML documentation integration** for enhanced API descriptions  
 - **Content type specification** for proper media type handling  
 - **Public endpoint support** with clear anonymous access documentation  
+
+--
+References:
+
+[1] https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md
