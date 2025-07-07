@@ -4,13 +4,13 @@ using Asp.Versioning;
 var builder = WebApplication.CreateBuilder(args);
 
 #region Service Registration
-// Infrastucture code
+// Infrastructure code
 
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 
 #region Setup for Rate Limiting
-// Infrastucture code
+// Infrastructure code
 
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
 
@@ -20,7 +20,7 @@ builder.Services.AddInMemoryRateLimiting();
 #endregion Setup for Rate Limiting
 
 #region Setup for Authentication, Authorization, and IdentityServer
-// Infrastucture code
+// Infrastructure code
 
 builder.Services.AddCustomIdentityServer();
 builder.Services.AddCustomAuthentication();
@@ -36,7 +36,7 @@ builder.Services.AddCustomSwagger();
 #endregion API Specification Setup
 
 #region API Versioning
-// Infrastucture code
+// Infrastructure code
 
 // This configuration supports three types of versioning:
 // URL path (/v1/weather), query string (?version=1.0), and header (X-Version).
@@ -58,14 +58,14 @@ builder.Services.AddApiVersioning(options =>
 #endregion Versioning
 
 #endregion Service Registration
-// Infrastucture code
+// Infrastructure code
 
 var app = builder.Build();
 
 #region Middleware Configuration
-// Infrastucture code and API specification code
+// Infrastructure code and API specification code
 
-// Infrastructure
+// Infrastructure code
 app.UseIpRateLimiting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -99,7 +99,7 @@ if (app.Environment.IsDevelopment())
 #endregion Middleware Configuration
 
 #region Configure Endpoints
-// Infrastucture code
+// Infrastructure code
 
 app.MapControllers();
 
