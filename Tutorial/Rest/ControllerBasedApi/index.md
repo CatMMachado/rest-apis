@@ -7,6 +7,7 @@ Controller-based APIs follow the traditional ASP.NET Core MVC pattern, where rou
 - Automatic OpenAPI documentation generation
 - API versioning support
 - Enrichment through XML comments and annotations
+- Interactive documentation and testing through Swagger UI
 
 This section demonstrates how to configure Swashbuckle in a project that uses a controller-based API, and how to document endpoints using the [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
 
@@ -25,6 +26,24 @@ For example:
 - #region Deprecation Notes provides information about deprecated endpoints or features.
 - #region Service Usage Limits includes logic and documentation for rate limiting.
 - #region API Versioning shows how versioning is configured and applied.
+
+In addition, within files such as Program.cs, regions are further distinguished by their purpose:
+
+- **Infrastructure code**: These regions contain the minimal setup and configuration required to make the example project functional. This code is included solely to support the demonstration of API documentation features and <u>should not be considered a template or best practice for building production projects</u>.
+- **API specification code**: These regions focus specifically on the configuration and integration of API documentation tools, such as Swashbuckle and Swagger UI. They demonstrate how to set up and expose API documentation in alignment with the guidelines.
+
+### Purpose of Installing Swagger UI
+
+Providing a visual and interactive representation of each API specification is an essential aspect.
+Swagger UI offers an interactive, browser-based interface for API documentation.
+Enabling Swagger UI in a project improves visibility, collaboration, and maintainability of APIs by:
+
+- Providing a clear overview of all available API endpoints, including parameters, request and response formats, and authentication requirements.
+- Allowing endpoints to be tested directly in the browser, streamlining development workflows and supporting faster debugging and onboarding.
+- Ensuring that documentation remains aligned with the implementation, as Swagger UI renders the OpenAPI specification directly from the codebase.
+- Centralizing API information in a single, accessible source, reducing ambiguity and improving communication across teams.
+
+Swagger UI transforms static API definitions into an interactive and easily navigable interface, improving both usability and long-term maintainability.
 
 ### The *ControllerBasedRestApi* repository
 

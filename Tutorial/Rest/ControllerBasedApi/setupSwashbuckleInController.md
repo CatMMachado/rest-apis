@@ -25,18 +25,6 @@ dotnet add package Microsoft.AspNetCore.OpenApi
 
 2. Confirm that the packages were added to your `<AppName>.csproj`.
 
-### Purpose of Installing Swagger UI
-
-Swagger UI offers an interactive, browser-based interface for API documentation.
-Enabling Swagger UI in a project improves visibility, collaboration, and maintainability of APIs by:
-
-- Providing a clear overview of all available API endpoints, including parameters, request and response formats, and authentication requirements.
-- Allowing endpoints to be tested directly in the browser, streamlining development workflows and supporting faster debugging and onboarding.
-- Ensuring that documentation remains aligned with the implementation, as Swagger UI renders the OpenAPI specification directly from the codebase.
-- Centralizing API information in a single, accessible source, reducing ambiguity and improving communication across teams.
-
-Swagger UI transforms static API definitions into an interactive and easily navigable interface, improving both usability and long-term maintainability.
-
 ## Configure Swagger
 
 1. To configure and register Swagger in your application:
