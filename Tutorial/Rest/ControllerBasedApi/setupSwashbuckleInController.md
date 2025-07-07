@@ -1,10 +1,36 @@
 <!-- markdownlint-disable MD029 -->
 
-# Setup and Run Swashbuckle
+# Swashbuckle Configuration for Controller-Based APIs
+
+## Overview
+
+This document provides comprehensive guidance for configuring Swashbuckle in controller-based ASP.NET Core API projects. Controller-based APIs utilize a structured approach with service extensions and region-based code organization, differing from minimal APIs where Swagger configuration is typically embedded directly in `Program.cs`.
+
+**Note**: All code examples and implementations referenced in this document are available in the repository under the `MyApi` project. Implementation should follow the patterns demonstrated in the repository.
+
+## Repository Structure
+
+The repository implements a structured approach utilizing the following key files:
+
+- **`Program.cs`**: Main application configuration file organized into clearly defined regions
+- **`Extensions/SwaggerServiceExtensions.cs`**: Contains the `AddCustomSwagger()` extension method for Swagger configuration
+- **`Controllers/WeatherForecastController.cs`**: Example controller demonstrating Swashbuckle annotations
+- **`MyApi.csproj`**: Project file containing package definitions
+
+### Code Organization with Regions
+
+The codebase employs `#region` blocks to organize functionality:
+
+- **Service Registration**: Contains all service configurations including Swagger setup
+- **Setup for API Specification**: Dedicated region for API documentation configuration
+- **Middleware Configuration**: Contains both infrastructure and API specification middleware
+- **Configure Endpoints**: Endpoint mapping configuration
+
+This organization facilitates the location and understanding of different aspects of the application setup.
 
 ## Install Swashbuckle and other required packages
 
-1. In your API project, install the required packages via the CLI:
+1. Install the required packages in the API project using the CLI:
 
 ```bash
 # Swashbuckle
@@ -23,30 +49,68 @@ dotnet add package Asp.Versioning.Mvc.ApiExplorer
 dotnet add package Microsoft.AspNetCore.OpenApi
 ```
 
-2. Confirm that the packages were added to your `<AppName>.csproj`.
+2. Verify that the packages have been added to the `<AppName>.csproj` file by referencing the repository's `MyApi.csproj` file.
 
-## Configure Swagger
+## Architecture: Centralized Configuration Approach
 
-1. To configure and register Swagger in your application:
+Controller-based APIs do not contain explicit Swashbuckle configuration lines scattered throughout the controller files. This architectural decision provides several benefits:
 
-- Add the contents of `SwaggerServiceExtension.AddCustomSwagger()` to your repository
-- Integrate these extensions into your application as shown in section `API Specification Setup` of `Program.cs`
+- **Centralized Configuration**: All Swashbuckle setup is centralized in the `SwaggerServiceExtensions.cs` file and registered in `Program.cs`
+- **Attribute-Based Documentation**: Controllers utilize declarative attributes (such as `[SwaggerOperation]`, `[SwaggerResponse]`) rather than imperative configuration
+- **Clean Separation**: This approach separates API documentation concerns from business logic, improving code maintainability
 
-2. To develop and test the API documentation, enable Swagger and he Swagger UI in the development environment, as shown in section `Middleware Configuration` of `Program.cs`.
-In this secttion you can see that an URL is being defined to show the API specification files, both in yaml and json format.
+Controller files focus on API logic while utilizing Swashbuckle annotations to provide metadata for documentation generation.
 
-## Enable XML Comments for Endpoint Documentation
+## Swagger Configuration
 
-To enable XML comments in your application, add the following line to the `PropertyGroup` section of your `<AppName>.csproj`: `<GenerateDocumentationFile>true</GenerateDocumentationFile>`.
+1. Service registration configuration:
 
-## Test Documentation Generation
+- **Implement SwaggerServiceExtensions**: Copy the contents of `SwaggerServiceExtensions.cs` from the repository's `MyApi/Extensions/` folder to the target project
+- **Register the extensions**: Add the `AddCustomSwagger()` call to the `Program.cs` file as demonstrated in the `Setup for API Specification` region of the repository's `Program.cs`
 
-At this point, you should be able to run your application and generate an API document following the OpenAPI specification, with a minimum of information, based on the code in your repository.
+2. Development environment configuration:
 
-After running your application, go to `http://localhost:5000/swagger/index.html` (if needed, adjust to the port selected for the application), and check in the Swagger UI the content currently in yout API specification file.
+- **Implement middleware configuration**: Copy the Swagger middleware setup from the `Middleware Configuration` region in the repository's `Program.cs`, adapting the API names as required for the specific application
+- **Configuration details**: This section defines URLs for API specification files in both YAML and JSON formats, and configures multiple API versions with internal/external documentation variants
 
-To check the content of you actual specification files, go to `http://localhost:5000/swagger/v1/swagger.yaml` for the yaml file and to `http://localhost:5000/swagger/v1/swagger.json` for the json file (as before, adjust the port if needed).
+### Configuration Regions
 
-Now that you have Swashbuckle up and running in your repository, you can start extending your current API specification, so that it complies with your company's [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines), generating clear, interactive, and well-structured API documentation.
+The repository's `Program.cs` contains the following key regions:
 
-Follow to the section [The API Guidelines in a controller-based API](ControllerBasedApi/guidelinesInController.md#introduction) to learn how.
+- **`#region Setup for API Specification`**: Contains the `builder.Services.AddCustomSwagger()` call that registers all Swagger services
+- **`#region Middleware Configuration`**: Contains the conditional Swagger middleware setup for development environments, including:
+  - `app.UseSwagger()`: Enables API specification endpoint generation
+  - `app.UseSwaggerUI()`: Configures the interactive Swagger UI with multiple API versions
+
+## XML Comments Configuration
+
+To enable XML comments in the application, add the following configuration to the `PropertyGroup` section of the `<AppName>.csproj` file (this configuration is demonstrated in the repository's `MyApi.csproj`): 
+
+```xml
+<GenerateDocumentationFile>true</GenerateDocumentationFile>
+```
+
+This configuration enables Swashbuckle to include XML documentation comments from controllers and models in the generated API documentation.
+
+## Documentation Generation Verification
+
+Upon completion of the configuration steps, the application should generate an API document following the OpenAPI specification, incorporating comprehensive information based on the implemented configuration.
+
+After running the application, navigate to `http://localhost:5000/swagger/index.html` (adjust the port as required for the specific application), and review the Swagger UI to verify the content of the API specification file.
+
+### Generated Documentation Structure
+
+The implemented configuration generates multiple API documentation versions:
+
+- **Internal API versions**: Complete documentation with all endpoints for internal team use
+- **External API versions**: Filtered documentation for client delivery and external consumers
+
+To review the content of the generated specification files:
+- YAML format: `http://localhost:5000/swagger/v1/swagger.yaml` 
+- JSON format: `http://localhost:5000/swagger/v1/swagger.json`
+
+(Adjust the port and version as required based on the specific configuration)
+
+The implementation of Swashbuckle using the demonstrated configuration enables the extension of the API specification to comply with established API guidelines, generating clear, interactive, and well-structured API documentation.
+
+For additional guidance on implementing API guidelines in controller-based APIs, refer to the [API Guidelines in Controller-Based APIs](ControllerBasedApi/guidelinesInController.md#introduction) section.
