@@ -16,14 +16,33 @@ public static class SwaggerServiceExtensions
     /// <param name="services"> The service collection to add services to.</param>
     /// <returns> The updated service collection with Swashbuckle and Swagger UI configured.</returns>
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
-{
-    services.AddSwaggerGen(options =>
     {
-        // Add support for multiple API versions
-        using var serviceProvider = services.BuildServiceProvider();
-        var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
+        services.AddSwaggerGen(options =>
+        {
+            // Add support for multiple API versions
+            using var serviceProvider = services.BuildServiceProvider();
+            var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        // Generate API documents for each API version, all of them visible on Swagger UI       
+            // Generate API documents for each API version
+            GenerateApiDocument(options, provider);
+
+            // Configure which endpoints are included in the API document based on their tags and version
+            ConfigureApiDocInclusion(options);
+
+            // Enable annotations provided by Swashbuckle.AspNetCore.Annotations
+            options.EnableAnnotations();
+
+            // Enable XML comments in Swashbuckle's generated API documentation
+            IncludeXmlDocComments(options);
+
+            // Configure OAuth2 security for the API document and Swagger UI
+            ConfigureOAuth2Security(options);
+        });
+
+        return services;
+    }
+    private static void GenerateApiDocument(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options, IApiVersionDescriptionProvider provider)
+    {
         foreach (var description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc($"{description.GroupName}-internal", new OpenApiInfo
@@ -40,7 +59,10 @@ public static class SwaggerServiceExtensions
                 Description = $"External API - Version {description.ApiVersion}"
             });
         }
+    }
 
+        private static void ConfigureApiDocInclusion(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
+    {
         // Predicate to control which endpoints are added to different specification documents
         options.DocInclusionPredicate((docName, apiDesc) =>
         {
@@ -74,8 +96,20 @@ public static class SwaggerServiceExtensions
                 return matchesVersion && (isExternal || isGeneral);
             }
         });
+    }
 
-        // Configure OAuth2 security for the API document and Swagger UI
+    private static void IncludeXmlDocComments(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
+    {
+        // This requires that the XML documentation is enable in the project file (usually by setting 
+        // <GenerateDocumentationFile>true</GenerateDocumentationFile> in the .csproj file)
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        options.IncludeXmlComments(xmlPath);
+    }
+
+    
+    private static void ConfigureOAuth2Security(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
+    {
         options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
             Type = SecuritySchemeType.OAuth2,
@@ -105,18 +139,5 @@ public static class SwaggerServiceExtensions
                 new[] { "api1" }
             }
         });
-
-        // Enable annotations provided by Swashbuckle.AspNetCore.Annotations
-        options.EnableAnnotations();
-
-        // Enable XML comments in Swashbuckle's generated API documentation
-        // This requires that the XML documentation is enable in the project file (usually by setting 
-        // <GenerateDocumentationFile>true</GenerateDocumentationFile> in the .csproj file)
-        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        options.IncludeXmlComments(xmlPath);
-    });
-
-    return services;
-}
+    }
 }
