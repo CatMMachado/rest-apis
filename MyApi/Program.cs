@@ -40,7 +40,7 @@ builder.Services.AddCustomAuthorization();
 
 builder.Services.AddCustomSwagger();
 
-#endregion API Specification Setup
+#endregion Setup for API Specification
 
 #region API Versioning
 // Infrastructure code
@@ -54,8 +54,13 @@ builder.Services.AddApiVersioning(options =>
         new QueryStringApiVersionReader("version"), // Support ?version=1.0
         new HeaderApiVersionReader("X-Version") // Support X-Version header
     );
+
+    // This configuration allows the API to assume a default version when no version is specified in incoming requests.
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
+
+     // Include API version in response headers
+    options.ReportApiVersions = true;
 }).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";

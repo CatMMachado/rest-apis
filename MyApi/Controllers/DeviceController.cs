@@ -343,7 +343,7 @@ public class DeviceController : ControllerBase
         return Ok(response);
     }
 
-    #endregion Versioning
+    #endregion API Versioning
 
     #region Internal and External APIs
     // -------------------------------------------------------------

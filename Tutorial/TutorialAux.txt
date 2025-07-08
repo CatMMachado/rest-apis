@@ -55,12 +55,17 @@ Where v1 represents Major version 1, the latest minor version and the latest pat
 "A header with full semantic version value SHOULD be returned in the response e.g., Api-Version: <MAJOR>.<MINOR>.<PATCH>."
 [https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-versioning.md]
 
+Todos estes pontos de API versioning são infra code. Para a doc, é relevante que eles tenham os atributos no controller/actions, para que o documento seja gerado.
+E que estejam a usar as versões capturadas pelo API Provider para ser dinâmico.
+=> Info adicionada à secção das guidelines.
+
 - API specification:
 1. "APIs MUST come with API specifications as means of detailed technical documentation. 
 For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used. 
 For asynchronous messaging APIs, AsyncAPI specifications of at least version 2 MUST be used. 
 The API specifications SHOULD be provided in YAML format for consistency reasons."
 1.1. Tendo em conta que as guidelines pedem YAML, vamos retirar a opção de geração de JSON.
+=> Info adicionada à secção das guidelines, incluindo a referência ao json
 
 2. API specification content:
 - fully defined request and response, or message schemas
@@ -96,7 +101,7 @@ The API specifications SHOULD be provided in YAML format for consistency reasons
 - Referir quando os tópicos não são suportados pela OpenAPI, mas que podem ser indicados nos campos "description". Ex., rate limits.
 - Referir que o tutorial apenas se refere àquilo que no repo das guidelines chamam de "API specification", que é a parte técnica. Esta especificação é um dos componentes daquilo que as guidelines chamam de "API documentation".
 [https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-documentation.md & https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md]
-- In the minimal API approach we don't need to exlicitly state that the media type is "application/json". But in the controller-based, if we don't add "[Produces("application/json")]" to the endpoint, the specification will contains 3 options for the media type.
+- In the minimal API approach we don't need to explicitly state that the media type is "application/json". But in the controller-based, if we don't add "[Produces("application/json")]" to the endpoint, the specification will contains 3 options for the media type.
 1. Add this "produces" attribute to every endpoint.
 
 - REST API Guidelines
@@ -130,7 +135,7 @@ https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/revi
 
 - Sparse fieldsets 
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/sparse-fieldsets.md:
-"Sparse fieldsets MUST be defined via the fields query parameter"
+"Sparse fieldsets MUST be defined via the fields query parameter" => Seleccionar quais os campos do recurso se quer receber.
 Example: "GET /articles?fields=title,body,comments HTTP/1.1"
 Use this as an example of a parameter
 2. "The fields parameter SHOULD be optional."
@@ -151,18 +156,18 @@ GET /devices?sort=-created
         The above example should return the oldest devices first, because it is in ascending sort order.
 5. "The default sort order MUST be ascending as if a + is specified"
 
-- Some of the guidelines are generic and not just for RESt. We need to make this clear.
+- Some of the guidelines are generic and not just for REST. We need to make this clear.
 
 - API Security
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/security.md
-Como falado na daily, nós não queremos ter uma implementação 100% funcional. Em concreto no cado de autenticação, rate limiting, estamos a adicionar o necessário para vermos como este tipo de informação se adiciona à API specification.
+Como falado na daily, nós não queremos ter uma implementação 100% funcional. Em concreto no caso de autenticação, rate limiting, estamos a adicionar o necessário para vermos como este tipo de informação se adiciona à API specification.
 Quando falarmos do(s) repositórios pela 1ª vez, vamos explicar esta decisão de design.
 Relembraremos o tema sempre que necessário.
 
 - Best practices
 https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/rest/best-practices.md
 
-"APIs SHOULD use level 3, making use of [/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md#mediatyperule101.5]links for hypermedia controls. This is a very efficient way for expressing relationships to other REST resources."
+"APIs SHOULD use level 3, making use of [/devsecops/api-governance/api-guidelines/-/blob/review/rest/media-type.md#mediatyperule101.5] links for hypermedia controls. This is a very efficient way for expressing relationships to other REST resources."
 Não é feito out of the box pelo Swashbuckle. A forma mais fácil é adicioná-los à mão após a geração do documento com a spec.
 Exemplo: ver chatGpt
 1.1 "If there are reasons for not using hypermedia, at least level 2 should be used."
@@ -175,3 +180,35 @@ https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/revi
 
 "It is recommended to use the "format" property in OpenAPI to enable validation and interoperability between client and server."
 The property "format" is automatically added to the specification, based on the data types defined in your code.
+
+--
+
+Common guidelines:
+
+1. Versioning
+- Version number format: <MAJOR>.<MINOR>.<PATCH> ; example 1.0.4
+- "If API implementation allows calling it without version and when no version is specified, API compatible to first release is used."
+- Approach: URL vs. header
+
+2. Specificaton: todo o conteúdo required +:
+- For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used.
+- The API specifications SHOULD be provided in YAML format for consistency reasons."
+- Deprecation notes
+
+3. API documentation
+- "Visualizations for each API specification MUST be provided, e.g., in form of Swagger UI or generated AsyncAPI HTML pages."
+- Access control: "(...) Permissions MUST be documented with clear association to API operations in the corresponding API specification or in separate documents, as appropriate."
+- "The service documentation SHOULD describe existing usage limits and provide limit values for static limits."
+
+4. HTTP-based API Protection
+- "APIs MUST adhere to OAuth 2.0 Bearer Token Usage (...)"
+Aqui será referir como é que adicionamos a info à documentação e não o tipo de auth
+
+
+REST API Guidelines:
+
+1. Media type: application/json & nas bulk operations será `application/vnd.sgre.bulk+json`. Adicionar a explicação deste 2º ao tutorial, de como fazer.
+
+2. Best practices:
+2.1. Media Links: Não é feito out of the box pelo Swashbuckle. A forma mais fácil é adicioná-los à mão após a geração do documento com a spec.
+2.2. Data types: `format` field
