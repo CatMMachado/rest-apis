@@ -1,6 +1,9 @@
 using AspNetCoreRateLimit;
 using Asp.Versioning;
 using MyApi.Services;
+using Microsoft.OpenApi.Writers;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,5 +111,36 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 #endregion Configure Endpoints
+
+#region Specification Export
+// Export V1 API specification to YAML file during startup
+
+if (app.Environment.IsDevelopment())
+{
+    try
+    {
+        // Get the Swagger document for V1
+        var swaggerProvider = app.Services.GetRequiredService<ISwaggerProvider>();
+        var swagger = swaggerProvider.GetSwagger("v1");
+        
+        // Serialize to YAML format using OpenAPI writer
+        var outputString = new StringWriter();
+        var writer = new OpenApiYamlWriter(outputString);
+        swagger.SerializeAsV3(writer);
+        var yamlContent = outputString.ToString();
+        
+        // Write to file
+        var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "api-spec.yaml");
+        await File.WriteAllTextAsync(outputPath, yamlContent);
+        
+        Console.WriteLine($"✅ API specification exported to: {outputPath}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Failed to export API specification: {ex.Message}");
+    }
+}
+
+#endregion Specification Export
 
 app.Run();
