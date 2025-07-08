@@ -2,32 +2,6 @@
 
 # Swashbuckle Configuration for Controller-Based APIs
 
-## Overview
-
-This document provides comprehensive guidance for configuring Swashbuckle in controller-based ASP.NET Core API projects. Controller-based APIs utilize a structured approach with service extensions and region-based code organization, differing from minimal APIs where Swagger configuration is typically embedded directly in `Program.cs`.
-
-**Note**: This document provides complete code examples for each configuration step. A comprehensive implementation example can be found in the repository under the `MyApi` project.
-
-## Repository Structure
-
-The repository implements a structured approach utilizing the following key files:
-
-- **`Program.cs`**: Main application configuration file organized into clearly defined regions
-- **`Extensions/SwaggerServiceExtensions.cs`**: Contains the `AddCustomSwagger()` extension method for Swagger configuration
-- **`Controllers/DeviceController.cs`**: Example controller demonstrating Swashbuckle annotations
-- **`MyApi.csproj`**: Project file containing package definitions
-
-### Code Organization with Regions
-
-The codebase employs `#region` blocks to organize functionality:
-
-- **Service Registration**: Contains all service configurations including Swagger setup
-- **Setup for API Specification**: Dedicated region for API documentation configuration
-- **Middleware Configuration**: Contains both infrastructure and API specification middleware
-- **Configure Endpoints**: Endpoint mapping configuration
-
-This organization facilitates the location and understanding of different aspects of the application setup.
-
 ## Install Swashbuckle and other required packages
 
 1. Install the required packages in the API project using the CLI:
@@ -50,16 +24,6 @@ This organization facilitates the location and understanding of different aspect
   ```
 
 2. Verify that the packages have been added to the `<AppName>.csproj` file by referencing the repository's `MyApi.csproj` file.
-
-## Architecture: Centralized Configuration Approach
-
-Controller-based APIs do not contain explicit Swashbuckle configuration lines scattered throughout the controller files. This architectural decision provides several benefits:
-
-- **Centralized Configuration**: All Swashbuckle setup is centralized in the `SwaggerServiceExtensions.cs` file and registered in `Program.cs`
-- **Attribute-Based Documentation**: Controllers utilize declarative attributes (such as `[SwaggerOperation]`, `[SwaggerResponse]`) rather than imperative configuration
-- **Clean Separation**: This approach separates API documentation concerns from business logic, improving code maintainability
-
-Controller files focus on API logic while utilizing Swashbuckle annotations to provide metadata for documentation generation.
 
 ## Swagger Configuration
 
@@ -94,7 +58,7 @@ Controller files focus on API logic while utilizing Swashbuckle annotations to p
 
 *A complete implementation example can be found in `MyApi/Extensions/SwaggerServiceExtensions.cs`*
 
-- **Register the extensions**: Register the extension in your `Program.cs` within the service registration region:
+- **Register the extensions**: Add the extension registration to `Program.cs`, within the service registration region:
 
   ```csharp
   builder.Services.AddCustomSwagger();
@@ -168,9 +132,6 @@ After running the application, navigate to `http://localhost:5000/swagger/index.
 ### Generated Documentation Structure
 
 The implemented configuration generates multiple API documentation versions:
-
-- **Internal API versions**: Complete documentation with all endpoints for internal team use
-- **External API versions**: Filtered documentation for client delivery and external consumers
 
 To review the content of the generated specification files:
 - YAML format: `http://localhost:5000/swagger/v1/swagger.yaml` 
