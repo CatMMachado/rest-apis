@@ -1,5 +1,6 @@
 using AspNetCoreRateLimit;
 using Asp.Versioning;
+using MyApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
+
+// Register application services
+builder.Services.AddScoped<IDeviceService, DeviceService>();
 
 #region Setup for Rate Limiting
 // Infrastructure code

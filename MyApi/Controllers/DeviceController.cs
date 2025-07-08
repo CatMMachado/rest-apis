@@ -4,6 +4,8 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
 using Asp.Versioning;
+using MyApi.Services;
+using MyApi.Models;
 
 namespace MyApi.Controllers;
 
@@ -17,11 +19,16 @@ namespace MyApi.Controllers;
 [ApiVersion("2.0")]
 public class DeviceController : ControllerBase
 {
-    private static readonly string[] DeviceNames =
-    [
-        "Smart Sensor", "IoT Gateway", "Temperature Monitor", "Pressure Valve", "Control Panel",
-        "Display Unit", "Communication Hub", "Power Module", "Safety Switch", "Data Logger"
-    ];
+    private readonly IDeviceService _deviceService;
+
+    /// <summary>
+    /// Initializes a new instance of the DeviceController.
+    /// </summary>
+    /// <param name="deviceService">The device service for handling business logic.</param>
+    public DeviceController(IDeviceService deviceService)
+    {
+        _deviceService = deviceService;
+    }
 
     /// <summary>
     /// Retrieves a sample resource with custom headers.
@@ -43,7 +50,8 @@ public class DeviceController : ControllerBase
         string xCustomHeader
     )
     {
-        return Ok($"Received header: {xCustomHeader}");
+        var message = _deviceService.ProcessCustomHeader(xCustomHeader);
+        return Ok(message);
     }
 
 
@@ -78,12 +86,8 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetWithRateLimit()
     {
-        var devices = GenerateDevices();
-        return Ok(new
-        {
-            message = "This endpoint is protected by rate limiting.",
-            devices
-        });
+        var response = _deviceService.GetDevicesWithRateLimit();
+        return Ok(response);
     }
 
     #endregion Service Usage Limits
@@ -102,7 +106,7 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetPublic()
     {
-        var devices = GenerateDevices();
+        var devices = _deviceService.GetDevices();
         return Ok(devices);
     }
 
@@ -123,13 +127,8 @@ public class DeviceController : ControllerBase
     public IActionResult GetPrivate()
     {
         var username = User.Identity?.Name ?? "No name provided";
-
-        return Ok(new
-        {
-            message = "This endpoint is protected!",
-            user = username,
-            devices = GenerateDevices()
-        });
+        var response = _deviceService.GetPrivateDevices(username);
+        return Ok(response);
     }
 
     #region Deprecation Notes
@@ -177,20 +176,11 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GenerateCustomDevice([FromBody] CustomDeviceRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
+        var device = _deviceService.GenerateCustomDevice(request);
+        if (device == null)
         {
             return BadRequest(new { message = "Name cannot be empty." });
         }
-
-        var device = new Device(
-            request.Name,
-            new DeviceType(Random.Shared.Next(1, 6), "Custom Type"),
-            new Dimension(
-                Math.Round(Random.Shared.NextDouble() * 50 + 5, 2),
-                Math.Round(Random.Shared.NextDouble() * 30 + 3, 2),
-                Math.Round(Random.Shared.NextDouble() * 20 + 2, 2)
-            )
-        );
 
         return Ok(device);
     }
@@ -215,15 +205,11 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GenerateCustomDevice([FromBody] Device request)
     {
-        if (request == null || string.IsNullOrWhiteSpace(request.Name))
+        var device = _deviceService.CreateCompleteDevice(request);
+        if (device == null)
         {
             return BadRequest(new { message = "Request object or Name cannot be null or empty." });
         }
-        var device = new Device(
-            request.Name,
-            request.DeviceType,
-            request.Dimension
-        );
 
         return Ok(device);
     }
@@ -250,24 +236,11 @@ public class DeviceController : ControllerBase
         [FromQuery] string location,
         [FromQuery] int status)
     {
-        if (request == null || string.IsNullOrWhiteSpace(request.Name))
+        var device = _deviceService.GenerateDeviceWithParameters(request, location, status);
+        if (device == null)
         {
             return BadRequest(new { message = "Request object or Name cannot be null or empty." });
         }
-
-        if (status < 0 || status > 1)
-        {
-            return BadRequest(new { message = "Status must be 0 (Offline) or 1 (Online)." });
-        }
-
-        var device = new
-        {
-            request.Name,
-            request.DeviceType,
-            request.Dimension,
-            Location = location,
-            Status = status == 1 ? "Online" : "Offline"
-        };
 
         return Ok(device);
     }
@@ -314,8 +287,7 @@ public class DeviceController : ControllerBase
             date = new DateTime(2025, 1, 1); // Set default date if not provided
         }
 
-        // Simulate deletion logic
-        bool deviceExists = id >= 1 && id <= 5; // Example: IDs 1-5 exist
+        bool deviceExists = _deviceService.ValidateDeviceForDeletion(id, date);
         if (!deviceExists)
         {
             return NotFound(new { message = $"Device with ID {id} and date {date:yyyy-MM-dd} not found." });
@@ -352,15 +324,8 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetDevicesV1Only()
     {
-        var devices = new
-        {
-            Version = "1.0",
-            Message = "This is a V1-only endpoint",
-            Data = GenerateDevices().Take(3), // V1 returns only 3 devices
-            Features = new[] { "Basic device listing", "Simple data structure" }
-        };
-
-        return Ok(devices);
+        var response = _deviceService.GetDevicesV1();
+        return Ok(response);
     }
 
     /// <summary>
@@ -383,31 +348,8 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetDevicesV2Only()
     {
-        var devices = new
-        {
-            Version = "2.0",
-            Message = "This is a V2-only endpoint with enhanced features",
-            Data = GenerateDevices().Select(d => new
-            {
-                d.Name,
-                d.DeviceType,
-                d.Dimension,
-                d.Dimension.Volume,
-                // V2 additions
-                Status = Random.Shared.Next(0, 2) == 1 ? "Online" : "Offline",
-                BatteryLevel = Random.Shared.Next(10, 100),
-                LastSeen = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 1440))
-            }),
-            Features = new[] { "Advanced device monitoring", "Extended data structure", "Additional device metrics" },
-            Metadata = new
-            {
-                DataSource = "Advanced Device API v2",
-                LastUpdated = DateTime.UtcNow,
-                Accuracy = "High precision"
-            }
-        };
-
-        return Ok(devices);
+        var response = _deviceService.GetDevicesV2();
+        return Ok(response);
     }
 
     /// <summary>
@@ -432,53 +374,10 @@ public class DeviceController : ControllerBase
     public IActionResult GetDeviceSummary()
     {
         var requestedVersion = HttpContext.GetRequestedApiVersion();
-
-        if (requestedVersion?.MajorVersion == 1)
-        {
-            // V1 response - simple structure
-            var v1Response = new
-            {
-                Version = "1.0",
-                Summary = "Basic device summary",
-                TotalDevices = 5,
-                AverageVolume = GenerateDevices().Average(d => d.Dimension.Volume),
-                AvailableLocations = new[] { "Factory A", "Warehouse B", "Office C" }
-            };
-
-            return Ok(v1Response);
-        }
-        else
-        {
-            // V2 response - enhanced structure
-            var devices = GenerateDevices().ToList();
-            var v2Response = new
-            {
-                Version = "2.0",
-                Summary = "Enhanced device summary with detailed analytics",
-                Statistics = new
-                {
-                    TotalDevices = devices.Count,
-                    AverageVolume = devices.Average(d => d.Dimension.Volume),
-                    MinVolume = devices.Min(d => d.Dimension.Volume),
-                    MaxVolume = devices.Max(d => d.Dimension.Volume),
-                    VolumeRange = devices.Max(d => d.Dimension.Volume) - devices.Min(d => d.Dimension.Volume)
-                },
-                Locations = new[]
-                {
-                    new { Name = "Factory A", Region = "North", DeviceCount = 25 },
-                    new { Name = "Warehouse B", Region = "South", DeviceCount = 18 },
-                    new { Name = "Office C", Region = "East", DeviceCount = 12 }
-                },
-                Metadata = new
-                {
-                    AnalysisDate = DateTime.UtcNow,
-                    DataQuality = "Premium",
-                    MonitoringAccuracy = 98.5
-                }
-            };
-
-            return Ok(v2Response);
-        }
+        var majorVersion = requestedVersion?.MajorVersion ?? 1;
+        
+        var response = _deviceService.GetDeviceSummary(majorVersion);
+        return Ok(response);
     }
 
     #endregion Versioning
@@ -513,39 +412,8 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetInternalAnalytics()
     {
-        var internalData = new
-        {
-            AccessLevel = "Internal",
-            Message = "This is internal-only device analytics data",
-            SystemMetrics = new
-            {
-                ServerLoad = Random.Shared.Next(10, 90),
-                DatabaseConnections = Random.Shared.Next(50, 200),
-                CacheHitRatio = Math.Round(Random.Shared.NextDouble() * 100, 2),
-                LastUpdated = DateTime.UtcNow
-            },
-            DetailedDevices = GenerateDevices().Select(d => new
-            {
-                d.Name,
-                d.DeviceType,
-                d.Dimension,
-                d.Dimension.Volume,
-                // Internal-only data
-                SerialNumber = $"SN{Random.Shared.Next(10000, 99999)}",
-                FirmwareVersion = $"v{Random.Shared.Next(1, 5)}.{Random.Shared.Next(0, 9)}.{Random.Shared.Next(0, 9)}",
-                ManufacturingDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(30, 365)),
-                InternalStatus = Random.Shared.Next(0, 2) == 1 ? "Operational" : "Maintenance Required",
-                ProcessingTime = Random.Shared.Next(10, 100) + "ms"
-            }),
-            InternalNotes = new[]
-            {
-                "All devices are within operational parameters",
-                "Scheduled maintenance completed last week",
-                "Monitoring system running optimally"
-            }
-        };
-
-        return Ok(internalData);
+        var response = _deviceService.GetInternalAnalytics();
+        return Ok(response);
     }
 
     /// <summary>
@@ -574,153 +442,9 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetExternalDevices()
     {
-        var externalData = new
-        {
-            AccessLevel = "External",
-            Message = "Public device data for external clients",
-            ApiVersion = "1.0",
-            Devices = GenerateDevices().Select(d => new
-            {
-                Name = d.Name,
-                Type = d.DeviceType.Name,
-                Dimensions = new
-                {
-                    Width = d.Dimension.Width,
-                    Height = d.Dimension.Height,
-                    Depth = d.Dimension.Depth
-                },
-                Volume = d.Dimension.Volume,
-                Status = GetDeviceStatus(d.Name)
-            }),
-            Metadata = new
-            {
-                Provider = "MyDevice API",
-                UpdateFrequency = "Every 15 minutes",
-                Coverage = "Global",
-                Accuracy = "Standard precision"
-            },
-            Links = new
-            {
-                Documentation = "/swagger",
-                Support = "https://api.mydevice.com/support"
-            }
-        };
-
-        return Ok(externalData);
+        var response = _deviceService.GetExternalDevices();
+        return Ok(response);
     }
-
-    /// <summary>
-    /// Helper method to get device status based on name.
-    /// </summary>
-    /// <param name="deviceName">Device name.</param>
-    /// <returns>Status indicator for the device.</returns>
-    private static string GetDeviceStatus(string? deviceName) => deviceName?.ToLower() switch
-    {
-        var n when n?.Contains("sensor") == true => "🟢 Online",
-        var n when n?.Contains("gateway") == true => "🔵 Connected",
-        var n when n?.Contains("monitor") == true => "🟡 Monitoring",
-        var n when n?.Contains("control") == true => "🟠 Active",
-        var n when n?.Contains("safety") == true => "🔴 Alert",
-        _ => "⚪ Unknown"
-    };
 
     #endregion Internal and External APIs
-
-    /// <summary>
-    /// Generate a list of sample devices.
-    /// </summary>
-    /// <remarks>
-    /// This method generates a random list of sample devices.
-    /// </remarks>
-    /// <returns>A list of devices.</returns>
-    private static IEnumerable<Device> GenerateDevices()
-    {
-        var deviceTypes = new[]
-        {
-            new DeviceType(1, "Sensor"),
-            new DeviceType(2, "Controller"),
-            new DeviceType(3, "Display"),
-            new DeviceType(4, "Gateway"),
-            new DeviceType(5, "Monitor")
-        };
-
-        return Enumerable.Range(1, 5).Select(index => new Device
-        (
-            DeviceNames[Random.Shared.Next(DeviceNames.Length)],
-            deviceTypes[Random.Shared.Next(deviceTypes.Length)],
-            new Dimension(
-                Math.Round(Random.Shared.NextDouble() * 50 + 5, 2), // Width: 5-55 cm
-                Math.Round(Random.Shared.NextDouble() * 30 + 3, 2), // Height: 3-33 cm
-                Math.Round(Random.Shared.NextDouble() * 20 + 2, 2)  // Depth: 2-22 cm
-            )
-        ))
-        .ToArray();
-    }
 }
-
-/// <summary>
-/// Represents a device.
-/// </summary>
-public record Device(
-    string Name,
-    [property: SwaggerSchema(Description = "The type of the device")]
-    DeviceType DeviceType,
-    [property: SwaggerSchema(Description = "The physical dimensions of the device")]
-    Dimension Dimension);
-
-/// <summary>
-/// Represents a device type.
-/// </summary>
-public record DeviceType(
-    [property: SwaggerSchema(Description = "The unique identifier of the device type")]
-    int Id,
-    [property: SwaggerSchema(Description = "The name of the device type")]
-    string Name);
-
-/// <summary>
-/// Represents the physical dimensions of a device.
-/// </summary>
-public record Dimension(
-    [property: SwaggerSchema(Description = "The width of the device in centimeters")]
-    [System.ComponentModel.DataAnnotations.Range(0.1, 1000, ErrorMessage = "Width must be between 0.1 and 1000 cm.")]
-    double Width,
-    [property: SwaggerSchema(Description = "The height of the device in centimeters")]
-    [System.ComponentModel.DataAnnotations.Range(0.1, 1000, ErrorMessage = "Height must be between 0.1 and 1000 cm.")]
-    double Height,
-    [property: SwaggerSchema(Description = "The depth of the device in centimeters")]
-    [System.ComponentModel.DataAnnotations.Range(0.1, 1000, ErrorMessage = "Depth must be between 0.1 and 1000 cm.")]
-    double Depth)
-{
-    /// <summary>
-    /// Gets the volume of the device in cubic centimeters.
-    /// </summary>
-    public double Volume => Width * Height * Depth;
-}
-
-/// <summary>
-/// Request model for generating a custom device.
-/// </summary>
-public class CustomDeviceRequest
-{
-    /// <summary>
-    /// The custom name for the device.
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Represents an error response.
-/// </summary>
-public class ErrorResponse
-{
-    /// <summary>
-    /// The error message.
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Additional details about the error.
-    /// </summary>
-    public string? Details { get; set; }
-}
-
