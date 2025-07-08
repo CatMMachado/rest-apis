@@ -39,11 +39,11 @@ builder.Services.AddCustomSwagger();
 // Infrastructure code
 
 // This configuration supports three types of versioning:
-// URL path (/v1/weather), query string (?version=1.0), and header (X-Version).
+// URL path (/v1/device), query string (?version=1.0), and header (X-Version).
 builder.Services.AddApiVersioning(options =>
 {
     options.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(), // Support /v1/weather, /v2/weather
+        new UrlSegmentApiVersionReader(), // Support /v1/device, /v2/device
         new QueryStringApiVersionReader("version"), // Support ?version=1.0
         new HeaderApiVersionReader("X-Version") // Support X-Version header
     );
