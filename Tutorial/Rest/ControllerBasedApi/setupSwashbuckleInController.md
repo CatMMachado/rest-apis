@@ -6,7 +6,7 @@
 
 This document provides comprehensive guidance for configuring Swashbuckle in controller-based ASP.NET Core API projects. Controller-based APIs utilize a structured approach with service extensions and region-based code organization, differing from minimal APIs where Swagger configuration is typically embedded directly in `Program.cs`.
 
-**Note**: All code examples and implementations referenced in this document are available in the repository under the `MyApi` project. Implementation should follow the patterns demonstrated in the repository.
+**Note**: This document provides complete code examples for each configuration step. A comprehensive implementation example can be found in the repository under the `MyApi` project.
 
 ## Repository Structure
 
@@ -14,7 +14,7 @@ The repository implements a structured approach utilizing the following key file
 
 - **`Program.cs`**: Main application configuration file organized into clearly defined regions
 - **`Extensions/SwaggerServiceExtensions.cs`**: Contains the `AddCustomSwagger()` extension method for Swagger configuration
-- **`Controllers/WeatherForecastController.cs`**: Example controller demonstrating Swashbuckle annotations
+- **`Controllers/DeviceController.cs`**: Example controller demonstrating Swashbuckle annotations
 - **`MyApi.csproj`**: Project file containing package definitions
 
 ### Code Organization with Regions
@@ -63,34 +63,100 @@ Controller files focus on API logic while utilizing Swashbuckle annotations to p
 
 ## Swagger Configuration
 
-1. Service registration configuration:
+### 1. Service Registration Configuration
 
-- **Implement SwaggerServiceExtensions**: Copy the contents of `SwaggerServiceExtensions.cs` from the repository's `MyApi/Extensions/` folder to the target project
-- **Register the extensions**: Add the `AddCustomSwagger()` call to the `Program.cs` file as demonstrated in the `Setup for API Specification` region of the repository's `Program.cs`
+- **Implement SwaggerServiceExtensions**: Create a Swagger service extension method:
 
-2. Development environment configuration:
+```csharp
+public static class SwaggerServiceExtensions
+{
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            // Add support for multiple API versions
+            using var serviceProvider = services.BuildServiceProvider();
+            var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
 
-- **Implement middleware configuration**: Copy the Swagger middleware setup from the `Middleware Configuration` region in the repository's `Program.cs`, adapting the API names as required for the specific application
-- **Configuration details**: This section defines URLs for API specification files in both YAML and JSON formats, and configures multiple API versions with internal/external documentation variants
+            foreach (var description in provider.ApiVersionDescriptions)
+            {
+                options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                {
+                    Title = "My API",
+                    Version = description.ApiVersion.ToString(),
+                    Description = $"API - Version {description.ApiVersion}"
+                });
+            }
+        });
+    }
+}
+```
+
+*A complete implementation example can be found in `MyApi/Extensions/SwaggerServiceExtensions.cs`*
+
+- **Register the extensions**: Register the extension in your `Program.cs` within the service registration region:
+
+```csharp
+builder.Services.AddCustomSwagger();
+```
+
+  *A complete implementation example can be found in `Program.cs`, in `Setup for API Specification` region*
+
+### 2. Development Environment Configuration
+
+- **Implement middleware configuration**: Enable Swagger middleware in your `Program.cs` for development environments:
+
+```csharp
+#region Middleware Configuration
+if (app.Environment.IsDevelopment())
+{
+    // Enable API specification endpoint generation
+    app.UseSwagger();
+
+    // Enable interactive Swagger UI with multiple API versions
+    app.UseSwaggerUI(options =>
+    {
+        // Get API version provider to dynamically configure endpoints
+        var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        // Configure endpoints for each API version dynamically
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.yaml", $"My API {description.ApiVersion}");
+        }
+    });
+}
+#endregion
+```
+
+This configuration:
+- Defines URLs for API specification files in both YAML and JSON formats
+- Configures multiple API versions with internal/external documentation variants
+
+*A complete implementation example can be found in the `Middleware Configuration` region of `MyApi/Program.cs`*
 
 ### Configuration Regions
 
-The repository's `Program.cs` contains the following key regions:
+The `Program.cs` file should contain the following key regions:
 
 - **`#region Setup for API Specification`**: Contains the `builder.Services.AddCustomSwagger()` call that registers all Swagger services
 - **`#region Middleware Configuration`**: Contains the conditional Swagger middleware setup for development environments, including:
   - `app.UseSwagger()`: Enables API specification endpoint generation
   - `app.UseSwaggerUI()`: Configures the interactive Swagger UI with multiple API versions
 
+*Reference implementation can be found in `MyApi/Program.cs`*
+
 ## XML Comments Configuration
 
-To enable XML comments in the application, add the following configuration to the `PropertyGroup` section of the `<AppName>.csproj` file (this configuration is demonstrated in the repository's `MyApi.csproj`): 
+To enable XML comments in the application, add the following configuration to the `PropertyGroup` section of the `<AppName>.csproj` file: 
 
 ```xml
 <GenerateDocumentationFile>true</GenerateDocumentationFile>
 ```
 
 This configuration enables Swashbuckle to include XML documentation comments from controllers and models in the generated API documentation.
+
+*Reference implementation can be found in `MyApi/MyApi.csproj`*
 
 ## Documentation Generation Verification
 
