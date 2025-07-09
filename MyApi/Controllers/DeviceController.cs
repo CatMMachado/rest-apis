@@ -293,11 +293,10 @@ public class DeviceController : ControllerBase
     /// Get device summary (Available in both V1 and V2).
     /// </summary>
     /// <remarks>
-    /// This endpoint is available in both API versions but returns different data structures.
-    /// V1 returns basic summary, while V2 includes additional metadata.
+    /// This endpoint is available in both API versions to exemplify adding an endpoint to multiple API versions.
     /// </remarks>
-    /// <returns>Device summary data appropriate for the requested version.</returns>
-    /// <response code="200">Returns version-specific device summary data.</response>
+    /// <returns>Device summary data.</returns>
+    /// <response code="200">Returns device summary data.</response>
     [HttpGet("summary")]
     [MapToApiVersion("1.0")]
     [MapToApiVersion("2.0")]
@@ -306,82 +305,69 @@ public class DeviceController : ControllerBase
     [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get device summary (V1 and V2)",
-        Description = "This endpoint is available in both versions but returns different data structures based on the API version."
+        Description = "This endpoint is available in both V1 and V2."
     )]
     public IActionResult GetDeviceSummary()
     {
-        var requestedVersion = HttpContext.GetRequestedApiVersion();
-        var majorVersion = requestedVersion?.MajorVersion ?? 1;
-        
-        var response = _deviceService.GetDeviceSummary(majorVersion);
-        return Ok(response);
+        return Ok(_deviceService.GetDeviceSummary());
     }
 
     #endregion API Versioning
 
-    #region Internal and External APIs
-    // -------------------------------------------------------------
-    // Internal and External API Endpoints
-    // These endpoints demonstrate different access levels using tags for documentation filtering
-    // -------------------------------------------------------------
+    #region External and Internal APIs
 
     /// <summary>
-    /// Get internal device analytics data (Internal API only).
+    /// Get device analytics data (Internal API only).
     /// </summary>
     /// <remarks>
-    /// This endpoint is restricted to internal systems only and provides detailed analytics data
+    /// This endpoint is restricted to internal systems and provides detailed analytics data
     /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
     /// </remarks>
-    /// <returns>Detailed internal device analytics and system metrics.</returns>
-    /// <response code="200">Returns internal analytics data.</response>
+    /// <returns>Detailed device analytics and system metrics.</returns>
+    /// <response code="200">Returns analytics data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
     /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
-    [HttpGet("internal/analytics")]
+    [HttpGet("analytics")]
     [Tags("Internal")]
     [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get internal device analytics (Internal API)",
         Description = "Restricted endpoint that provides detailed device analytics for internal systems only."
     )]
-    [Produces("application/json")]
     public IActionResult GetInternalAnalytics()
     {
-        var response = _deviceService.GetInternalAnalytics();
-        return Ok(response);
+        return Ok(null);
     }
 
     /// <summary>
-    /// Get public device summary (External API).
+    /// Get device summary (External API).
     /// </summary>
     /// <remarks>
     /// This endpoint is available to external clients and provides a clean, 
     /// public-facing device data without sensitive internal information.
     /// Uses "External" tag for documentation filtering.
-    /// Available in both V1 and V2 for external client compatibility.
     /// </remarks>
     /// <returns>Public device data suitable for external consumption.</returns>
     /// <response code="200">Returns public device data.</response>
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    [HttpGet("external/devices")]
+    [HttpGet("devices-summary")]
     [Tags("External")]
-    [MapToApiVersion("1.0")]
-    [MapToApiVersion("2.0")]
     [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get public devices (External API)",
         Description = "Public endpoint that provides device data for external clients and third-party integrations."
     )]
-    [Produces("application/json")]
     public IActionResult GetExternalDevices()
     {
-        var response = _deviceService.GetExternalDevices();
-        return Ok(response);
+        return Ok(null);
     }
 
-    #endregion Internal and External APIs
+    #endregion External and Internal APIs
 }

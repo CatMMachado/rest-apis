@@ -73,11 +73,15 @@ For a working example in the [ControllerBasedRestApi](**ADD LINK**) repository c
 
 ### API Specification
 
+#### OpenAPI specification version 3
+
 The [API Specification guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines/-/blob/review/common/api-specification.md) state the following:
 
 - "For synchronous HTTP-based APIs, OpenAPI specifications of at least version 3 MUST be used".
 
 OpenAPI version 3 is provided by default by Swashbuckle, so there is no need for additional steps to comply with this request.
+
+#### Specification file in YAML format
 
 - "The API specifications SHOULD be provided in YAML format for consistency reasons."
 
@@ -91,6 +95,12 @@ Swahbuckle creates both YAML and JSON files under the hood, and you can control 
   - (...)
 
 The examples provided work both for YAML and JSON, it is just a matter of replacing `.yaml` with `.json` in the case you want to control the visibility of the JSON document.
+
+#### External and internal APIs
+
+#### API protection
+
+#### Request and Response schemas
 
 In terms of API specification content, the following list shows the required elements:
 
@@ -106,11 +116,17 @@ In terms of API specification content, the following list shows the required ele
 
 For each of these elements, we show below how to add them to your repository.
 
+**External & internal is here**
+
 #### Request and response definition
 
 (...)
 
 ---
+#region External and Internal APIs
+    // -------------------------------------------------------------
+    // These endpoints demonstrate different access levels using tags for documentation filtering
+    // -------------------------------------------------------------
 
 ## API Specification Foundation
 

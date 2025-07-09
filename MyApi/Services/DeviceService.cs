@@ -76,23 +76,10 @@ public interface IDeviceService
     object GetDevicesV2();
 
     /// <summary>
-    /// Gets device summary for specified API version.
+    /// Gets device summary.
     /// </summary>
-    /// <param name="majorVersion">The API major version (1 or 2).</param>
-    /// <returns>Version-specific device summary.</returns>
-    object GetDeviceSummary(int majorVersion);
-
-    /// <summary>
-    /// Gets internal analytics data for internal systems.
-    /// </summary>
-    /// <returns>Detailed internal analytics and metrics.</returns>
-    object GetInternalAnalytics();
-
-    /// <summary>
-    /// Gets external device data for public consumption.
-    /// </summary>
-    /// <returns>Public device data without sensitive information.</returns>
-    object GetExternalDevices();
+    /// <returns>Device summary.</returns>
+    object GetDeviceSummary();
 }
 
 /// <summary>
@@ -270,131 +257,19 @@ public class DeviceService : IDeviceService
     }
 
     /// <summary>
-    /// Gets device summary for specified API version.
+    /// Gets device summary.
     /// </summary>
-    /// <param name="majorVersion">The API major version (1 or 2).</param>
-    /// <returns>Version-specific device summary.</returns>
-    public object GetDeviceSummary(int majorVersion)
+    /// <returns>Device summary.</returns>
+    public object GetDeviceSummary()
     {
-        if (majorVersion == 1)
-        {
-            // V1 response - simple structure
-            return new
-            {
-                Version = "1.0",
-                Summary = "Basic device summary",
-                TotalDevices = 5,
-                AverageVolume = CreateDevices().Average(d => d.Dimension.Volume),
-                AvailableLocations = new[] { "Factory A", "Warehouse B", "Office C" }
-            };
-        }
-        else
-        {
-            // V2 response - enhanced structure
-            var devices = CreateDevices().ToList();
-            return new
-            {
-                Version = "2.0",
-                Summary = "Enhanced device summary with detailed analytics",
-                Statistics = new
-                {
-                    TotalDevices = devices.Count,
-                    AverageVolume = devices.Average(d => d.Dimension.Volume),
-                    MinVolume = devices.Min(d => d.Dimension.Volume),
-                    MaxVolume = devices.Max(d => d.Dimension.Volume),
-                    VolumeRange = devices.Max(d => d.Dimension.Volume) - devices.Min(d => d.Dimension.Volume)
-                },
-                Locations = new[]
-                {
-                    new { Name = "Factory A", Region = "North", DeviceCount = 25 },
-                    new { Name = "Warehouse B", Region = "South", DeviceCount = 18 },
-                    new { Name = "Office C", Region = "East", DeviceCount = 12 }
-                },
-                Metadata = new
-                {
-                    AnalysisDate = DateTime.UtcNow,
-                    DataQuality = "Premium",
-                    MonitoringAccuracy = 98.5
-                }
-            };
-        }
-    }
 
-    /// <summary>
-    /// Gets internal analytics data for internal systems.
-    /// </summary>
-    /// <returns>Detailed internal analytics and metrics.</returns>
-    public object GetInternalAnalytics()
-    {
         return new
         {
-            AccessLevel = "Internal",
-            Message = "This is internal-only device analytics data",
-            SystemMetrics = new
-            {
-                ServerLoad = Random.Shared.Next(10, 90),
-                DatabaseConnections = Random.Shared.Next(50, 200),
-                CacheHitRatio = Math.Round(Random.Shared.NextDouble() * 100, 2),
-                LastUpdated = DateTime.UtcNow
-            },
-            DetailedDevices = CreateDevices().Select(d => new
-            {
-                d.Name,
-                d.DeviceType,
-                d.Dimension,
-                d.Dimension.Volume,
-                // Internal-only data
-                SerialNumber = $"SN{Random.Shared.Next(10000, 99999)}",
-                FirmwareVersion = $"v{Random.Shared.Next(1, 5)}.{Random.Shared.Next(0, 9)}.{Random.Shared.Next(0, 9)}",
-                ManufacturingDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(30, 365)),
-                InternalStatus = Random.Shared.Next(0, 2) == 1 ? "Operational" : "Maintenance Required",
-                ProcessingTime = Random.Shared.Next(10, 100) + "ms"
-            }),
-            InternalNotes = new[]
-            {
-                "All devices are within operational parameters",
-                "Scheduled maintenance completed last week",
-                "Monitoring system running optimally"
-            }
-        };
-    }
-
-    /// <summary>
-    /// Gets external device data for public consumption.
-    /// </summary>
-    /// <returns>Public device data without sensitive information.</returns>
-    public object GetExternalDevices()
-    {
-        return new
-        {
-            AccessLevel = "External",
-            Message = "Public device data for external clients",
-            ApiVersion = "1.0",
-            Devices = CreateDevices().Select(d => new
-            {
-                Name = d.Name,
-                Type = d.DeviceType.Name,
-                Dimensions = new
-                {
-                    Width = d.Dimension.Width,
-                    Height = d.Dimension.Height,
-                    Depth = d.Dimension.Depth
-                },
-                Volume = d.Dimension.Volume,
-                Status = GetDeviceStatus(d.Name)
-            }),
-            Metadata = new
-            {
-                Provider = "MyDevice API",
-                UpdateFrequency = "Every 15 minutes",
-                Coverage = "Global",
-                Accuracy = "Standard precision"
-            },
-            Links = new
-            {
-                Documentation = "/swagger",
-                Support = "https://api.mydevice.com/support"
-            }
+            Version = "1.0",
+            Summary = "Basic device summary",
+            TotalDevices = 5,
+            AverageVolume = CreateDevices().Average(d => d.Dimension.Volume),
+            AvailableLocations = new[] { "Factory A", "Warehouse B", "Office C" }
         };
     }
 
