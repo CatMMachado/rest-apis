@@ -85,6 +85,10 @@ builder.Services.AddCustomSwagger();
 Enable Swagger and Swagger UI middleware in your `Program.cs` for development environments:
 
 ```csharp
+using Asp.Versioning.ApiExplorer;
+
+...
+
 if (app.Environment.IsDevelopment())
 {
     // Enable API specification endpoint generation
@@ -96,12 +100,12 @@ if (app.Environment.IsDevelopment())
         // Get API version provider to dynamically configure endpoints
         var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-          // Configure endpoints for each API version dynamically
-          foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-          {
-              options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.yaml", $"My API {description.ApiVersion}");
-          }
-      });
+        // Configure endpoints for each API version dynamically
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.yaml", $"My API {description.ApiVersion}");
+        }
+    });
   }
   ```
 
