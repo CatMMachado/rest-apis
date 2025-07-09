@@ -12,7 +12,7 @@ namespace MyApi.Controllers;
 /// </summary>
 [Authorize(Policy = "ApiScope")]
 [ApiController]
-[Route("v{version:apiVersion}/devices")]
+[Route("v{version:apiVersion}/device")]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
 public class DeviceRateLimitController : ControllerBase

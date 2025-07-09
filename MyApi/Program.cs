@@ -2,7 +2,6 @@ using AspNetCoreRateLimit;
 using Asp.Versioning;
 using MyApi.Services;
 using Microsoft.OpenApi.Writers;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);

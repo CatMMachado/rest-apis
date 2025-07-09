@@ -14,7 +14,7 @@ namespace MyApi.Controllers;
 /// </summary>
 [Authorize(Policy = "ApiScope")]
 [ApiController]
-[Route("v{version:apiVersion}/devices")]
+[Route("v{version:apiVersion}/device")]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
 public class DeviceController : ControllerBase
@@ -30,6 +30,8 @@ public class DeviceController : ControllerBase
         _deviceService = deviceService;
     }
 
+    #region Header Details
+
     /// <summary>
     /// Retrieves a sample resource with custom headers.
     /// </summary>
@@ -39,21 +41,26 @@ public class DeviceController : ControllerBase
     /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
     /// <returns>A sample response string.</returns>
     [HttpGet("custom-header")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get with custom header",
         Description = "Returns a message after receiving a custom header"
     )]
-    [ProducesResponseType(typeof(string), 200)]
     public IActionResult GetWithCustomHeader(
         [FromHeader(Name = "X-Custom-Header")]
         [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
         string xCustomHeader
     )
     {
-        var message = _deviceService.ProcessCustomHeader(xCustomHeader);
-        return Ok(message);
+        var result = _deviceService.ProcessCustomHeader(xCustomHeader);
+        return Ok(new { message = result });
     }
 
+    #endregion Header Details
+
+    #region API Protection
 
     /// <summary>
     /// Get public devices.
@@ -84,7 +91,7 @@ public class DeviceController : ControllerBase
     /// <response code="401">Unauthorized if the token is missing or invalid.</response>
     [HttpGet("private")]
     [Authorize(Policy = "ApiScope")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Produces("application/json")]
     public IActionResult GetPrivate()
@@ -93,23 +100,21 @@ public class DeviceController : ControllerBase
         var response = _deviceService.GetPrivateDevices(username);
         return Ok(response);
     }
+    
+    #endregion API Protection
 
     #region Deprecation Notes
-    // -------------------------------------------------------------
-    // The following endpoint is deprecated.
-    // -------------------------------------------------------------
 
     /// <summary>
-    /// [Deprecated] Get devices (old version).
+    /// Get devices.
     /// </summary>
     /// <remarks>
     /// This endpoint is deprecated. Please use <c>/devices/public</c> instead.
     /// </remarks>
     /// <returns>A list of devices.</returns>
     /// <response code="410">Gone - This endpoint is deprecated.</response>
-    [HttpGet("deprecated")]
+    [HttpGet]
     [Obsolete("This endpoint is deprecated. Please use /devices/public instead.")]
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status410Gone)]
     [Produces("application/json")]
     public IActionResult GetDeprecated()
@@ -122,51 +127,22 @@ public class DeviceController : ControllerBase
 
     #endregion Deprecation Notes
 
-    /// <summary>
-    /// Generate a custom device.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint allows you to generate a custom device by providing a name.
-    /// </remarks>
-    /// <param name="request">The request body containing the custom device name.</param>
-    /// <returns>The generated device.</returns>
-    /// <response code="200">Returns the generated device.</response>
-    /// <response code="400">Bad request if the input is invalid.</response>
-    [HttpPost("custom")]
-    [Authorize(Policy = "ApiScope")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Produces("application/json")]
-    public IActionResult GenerateCustomDevice([FromBody] CustomDeviceRequest request)
-    {
-        var device = _deviceService.GenerateCustomDevice(request);
-        if (device == null)
-        {
-            return BadRequest(new { message = "Name cannot be empty." });
-        }
-
-        return Ok(device);
-    }
-
-    #region Error Response Schema
-    // -------------------------------------------------------------
-    // The following class defines the error response schema. 
-    // -------------------------------------------------------------
+    #region Request Body and Response Schemas
     
     /// <summary>
-    /// Generate a custom device.
+    /// Create a custom device.
     /// </summary>
     /// <remarks>
     /// This endpoint allows you to generate a custom device by providing the complete Device.
     /// </remarks>
     /// <param name="request">The request body containing the custom Device.</param>
     /// <returns>The generated device.</returns>
-    [HttpPost("CompleteDevice")]
+    [HttpPost]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Device))] // The "Type" parameter specifies the type of the response body.
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))] // The "Type" parameter specifies the type of the error response body.
     [Produces("application/json")]
-    public IActionResult GenerateCustomDevice([FromBody] Device request)
+    public IActionResult CreateCustomDevice([FromBody] Device request)
     {
         var device = _deviceService.CreateCompleteDevice(request);
         if (device == null)
@@ -177,29 +153,31 @@ public class DeviceController : ControllerBase
         return Ok(device);
     }
 
-    #endregion Error Response Schema
+    #endregion Request Body and Response Schemas
+
+    #region Query Parameters with Default Value
 
     /// <summary>
-    /// Generate a device with additional parameters.
+    /// Create a device with additional parameters.
     /// </summary>
     /// <remarks>
-    /// This endpoint allows you to generate a custom device by providing additional parameters such as location and status.
+    /// This endpoint allows you to create a device by providing additional parameters such as location and status.
     /// </remarks>
-    /// <param name="request">The request body containing the custom Device details.</param>
+    /// <param name="request">The request body containing the Device details.</param>
     /// <param name="location">The location for the device.</param>
     /// <param name="status">The status of the device (0=Offline, 1=Online).</param>
     /// <returns>The generated device with additional details.</returns>
-    [HttpPost("custom-with-params")]
+    [HttpPost("with-params")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
-    public IActionResult GenerateDeviceWithParams(
+    public IActionResult CreateDeviceWithParams(
         [FromBody] Device request,
         [FromQuery] string location,
-        [FromQuery] int status)
+        [FromQuery] [DefaultValue(0)] int status)
     {
-        var device = _deviceService.GenerateDeviceWithParameters(request, location, status);
+        var device = _deviceService.CreateDeviceWithParameters(request, location, status);
         if (device == null)
         {
             return BadRequest(new { message = "Request object or Name cannot be null or empty." });
@@ -208,11 +186,10 @@ public class DeviceController : ControllerBase
         return Ok(device);
     }
 
+    #endregion Query Parameters
 
-    #region Parameter Restrictions and Defaults
-    // -------------------------------------------------------------
-    // The following endpoint demonstrates parameter restrictions and default values.
-    // -------------------------------------------------------------
+
+    #region Path Parameters => ? Restrictions and Default Values
 
     /// <summary>
     /// Delete a device by ID and date.
@@ -231,11 +208,11 @@ public class DeviceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Delete a device by ID and date",
         Description = "Deletes a device based on the provided ID and date. The date must be in the format yyyy-MM-dd."
     )]
-    [Produces("application/json")]
     public IActionResult DeleteDevice(
         [FromRoute, SwaggerParameter(Description = "The ID of the device to delete (default: 1).")]
         [DefaultValue(2)] int id, // Default value for ID
@@ -260,15 +237,12 @@ public class DeviceController : ControllerBase
         return NoContent();
     }
 
-    #endregion Parameter Restrictions and Defaults
+    #endregion Path Parameter Restrictions and Default Values
 
     #region API Versioning
-    // -------------------------------------------------------------
-    // API Versioning Endpoints
-    // -------------------------------------------------------------
 
     /// <summary>
-    /// Get device data (V1 only endpoint).
+    /// Get device.
     /// </summary>
     /// <remarks>
     /// This endpoint is only available in API version 1.0.
@@ -280,11 +254,11 @@ public class DeviceController : ControllerBase
     [MapToApiVersion("1.0")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get devices (V1 only)",
         Description = "This endpoint is exclusive to API version 1.0 and returns basic device data."
     )]
-    [Produces("application/json")]
     public IActionResult GetDevicesV1Only()
     {
         var response = _deviceService.GetDevicesV1();
@@ -292,7 +266,7 @@ public class DeviceController : ControllerBase
     }
 
     /// <summary>
-    /// Get advanced device data (V2 only endpoint).
+    /// Get advanced device data.
     /// </summary>
     /// <remarks>
     /// This endpoint is only available in API version 2.0.
@@ -304,11 +278,11 @@ public class DeviceController : ControllerBase
     [MapToApiVersion("2.0")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get advanced devices (V2 only)",
         Description = "This endpoint is exclusive to API version 2.0 and returns enhanced device data with additional features."
     )]
-    [Produces("application/json")]
     public IActionResult GetDevicesV2Only()
     {
         var response = _deviceService.GetDevicesV2();
@@ -329,11 +303,11 @@ public class DeviceController : ControllerBase
     [MapToApiVersion("2.0")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
     [SwaggerOperation(
         Summary = "Get device summary (V1 and V2)",
         Description = "This endpoint is available in both versions but returns different data structures based on the API version."
     )]
-    [Produces("application/json")]
     public IActionResult GetDeviceSummary()
     {
         var requestedVersion = HttpContext.GetRequestedApiVersion();

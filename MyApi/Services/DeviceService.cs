@@ -40,13 +40,6 @@ public interface IDeviceService
     object GetPrivateDevices(string username);
 
     /// <summary>
-    /// Generates a custom device from a request.
-    /// </summary>
-    /// <param name="request">The custom device request.</param>
-    /// <returns>The generated device or null if invalid.</returns>
-    Device? GenerateCustomDevice(CustomDeviceRequest request);
-
-    /// <summary>
     /// Validates and creates a complete device.
     /// </summary>
     /// <param name="device">The device to validate and create.</param>
@@ -54,13 +47,13 @@ public interface IDeviceService
     Device? CreateCompleteDevice(Device device);
 
     /// <summary>
-    /// Generates a device with additional parameters.
+    /// Creates a device with additional parameters.
     /// </summary>
     /// <param name="device">The base device.</param>
     /// <param name="location">The device location.</param>
     /// <param name="status">The device status (0=Offline, 1=Online).</param>
     /// <returns>The enhanced device object or null if validation fails.</returns>
-    object? GenerateDeviceWithParameters(Device device, string location, int status);
+    object? CreateDeviceWithParameters(Device device, string location, int status);
 
     /// <summary>
     /// Validates if a device exists for deletion.
@@ -129,7 +122,7 @@ public class DeviceService : IDeviceService
     /// <returns>An object containing devices and rate limiting message.</returns>
     public object GetDevicesWithRateLimit()
     {
-        var devices = GenerateDevices();
+        var devices = CreateDevices();
         return new
         {
             message = "This endpoint is protected by rate limiting.",
@@ -143,7 +136,7 @@ public class DeviceService : IDeviceService
     /// <returns>A collection of devices.</returns>
     public IEnumerable<Device> GetDevices()
     {
-        return GenerateDevices();
+        return CreateDevices();
     }
 
     /// <summary>
@@ -152,7 +145,7 @@ public class DeviceService : IDeviceService
     /// <returns>A collection of devices.</returns>
     public IEnumerable<Device> GetPublicDevices()
     {
-        return GenerateDevices();
+        return CreateDevices();
     }
 
     /// <summary>
@@ -166,31 +159,8 @@ public class DeviceService : IDeviceService
         {
             message = "This endpoint is protected!",
             user = username,
-            devices = GenerateDevices()
+            devices = CreateDevices()
         };
-    }
-
-    /// <summary>
-    /// Generates a custom device from a request.
-    /// </summary>
-    /// <param name="request">The custom device request.</param>
-    /// <returns>The generated device or null if invalid.</returns>
-    public Device? GenerateCustomDevice(CustomDeviceRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return null;
-        }
-
-        return new Device(
-            request.Name,
-            new DeviceType(Random.Shared.Next(1, 6), "Custom Type"),
-            new Dimension(
-                Math.Round(Random.Shared.NextDouble() * 50 + 5, 2),
-                Math.Round(Random.Shared.NextDouble() * 30 + 3, 2),
-                Math.Round(Random.Shared.NextDouble() * 20 + 2, 2)
-            )
-        );
     }
 
     /// <summary>
@@ -213,13 +183,13 @@ public class DeviceService : IDeviceService
     }
 
     /// <summary>
-    /// Generates a device with additional parameters.
+    /// Creates a device with additional parameters.
     /// </summary>
     /// <param name="device">The base device.</param>
     /// <param name="location">The device location.</param>
     /// <param name="status">The device status (0=Offline, 1=Online).</param>
     /// <returns>The enhanced device object or null if validation fails.</returns>
-    public object? GenerateDeviceWithParameters(Device device, string location, int status)
+    public object? CreateDeviceWithParameters(Device device, string location, int status)
     {
         if (device == null || string.IsNullOrWhiteSpace(device.Name))
         {
@@ -263,7 +233,7 @@ public class DeviceService : IDeviceService
         {
             Version = "1.0",
             Message = "This is a V1-only endpoint",
-            Data = GenerateDevices().Take(3), // V1 returns only 3 devices
+            Data = CreateDevices().Take(3), // V1 returns only 3 devices
             Features = new[] { "Basic device listing", "Simple data structure" }
         };
     }
@@ -278,7 +248,7 @@ public class DeviceService : IDeviceService
         {
             Version = "2.0",
             Message = "This is a V2-only endpoint with enhanced features",
-            Data = GenerateDevices().Select(d => new
+            Data = CreateDevices().Select(d => new
             {
                 d.Name,
                 d.DeviceType,
@@ -314,14 +284,14 @@ public class DeviceService : IDeviceService
                 Version = "1.0",
                 Summary = "Basic device summary",
                 TotalDevices = 5,
-                AverageVolume = GenerateDevices().Average(d => d.Dimension.Volume),
+                AverageVolume = CreateDevices().Average(d => d.Dimension.Volume),
                 AvailableLocations = new[] { "Factory A", "Warehouse B", "Office C" }
             };
         }
         else
         {
             // V2 response - enhanced structure
-            var devices = GenerateDevices().ToList();
+            var devices = CreateDevices().ToList();
             return new
             {
                 Version = "2.0",
@@ -367,7 +337,7 @@ public class DeviceService : IDeviceService
                 CacheHitRatio = Math.Round(Random.Shared.NextDouble() * 100, 2),
                 LastUpdated = DateTime.UtcNow
             },
-            DetailedDevices = GenerateDevices().Select(d => new
+            DetailedDevices = CreateDevices().Select(d => new
             {
                 d.Name,
                 d.DeviceType,
@@ -400,7 +370,7 @@ public class DeviceService : IDeviceService
             AccessLevel = "External",
             Message = "Public device data for external clients",
             ApiVersion = "1.0",
-            Devices = GenerateDevices().Select(d => new
+            Devices = CreateDevices().Select(d => new
             {
                 Name = d.Name,
                 Type = d.DeviceType.Name,
@@ -429,10 +399,10 @@ public class DeviceService : IDeviceService
     }
 
     /// <summary>
-    /// Generate a list of sample devices.
+    /// Create a list of sample devices.
     /// </summary>
     /// <returns>A list of devices.</returns>
-    private static IEnumerable<Device> GenerateDevices()
+    private static IEnumerable<Device> CreateDevices()
     {
         var deviceTypes = new[]
         {

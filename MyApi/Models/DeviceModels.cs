@@ -43,17 +43,6 @@ public record Dimension(
 }
 
 /// <summary>
-/// Request model for generating a custom device.
-/// </summary>
-public class CustomDeviceRequest
-{
-    /// <summary>
-    /// The custom name for the device.
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// Represents an error response.
 /// </summary>
 public class ErrorResponse
