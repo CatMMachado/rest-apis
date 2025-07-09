@@ -3,6 +3,7 @@ using Asp.Versioning;
 using MyApi.Services;
 using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.Swagger;
+using Asp.Versioning.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,13 +93,15 @@ if (app.Environment.IsDevelopment())
     // Enables the interactive Swagger UI, for each version specified
     app.UseSwaggerUI(options =>
     {
-        // Internal API documentation versions (Complete - for internal team)
-        options.SwaggerEndpoint("/swagger/v1-internal/swagger.yaml", "Internal API V1 - Complete");
-        options.SwaggerEndpoint("/swagger/v2-internal/swagger.yaml", "Internal API V2 - Complete");
+        // Get API version provider to dynamically configure endpoints
+        var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        // External API documentation versions (Filtered - for client delivery and external consumers)
-        options.SwaggerEndpoint("/swagger/v1/swagger.yaml", "My API V1 - Client");
-        options.SwaggerEndpoint("/swagger/v2/swagger.yaml", "My API V2 - Client");
+        // Configure endpoints for each API version dynamically
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}-internal/swagger.yaml", $"Internal API {description.ApiVersion} - Complete");
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.yaml", $"My API {description.ApiVersion} - Client");
+        }
 
         // OAuth2 configuration for Swagger UI, allowing users to authenticate in the UI
         options.OAuthClientId("auth-client-id");
