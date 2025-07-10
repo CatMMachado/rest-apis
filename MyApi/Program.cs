@@ -119,7 +119,7 @@ app.MapControllers();
 
 #endregion Configure Endpoints
 
-#region Specification Export
+#region API Specification Export to YAML
 // Export V1 API specification to YAML file during startup
 
 if (app.Environment.IsDevelopment())
@@ -140,14 +140,14 @@ if (app.Environment.IsDevelopment())
         var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "api-spec.yaml");
         await File.WriteAllTextAsync(outputPath, yamlContent);
         
-        Console.WriteLine($"✅ API specification exported to: {outputPath}");
+        Console.WriteLine($"API specification exported to: {outputPath}");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Failed to export API specification: {ex.Message}");
+        Console.WriteLine($"Failed to export API specification: {ex.Message}");
     }
 }
 
-#endregion Specification Export
+#endregion API Specification Export to YAML
 
 app.Run();

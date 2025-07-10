@@ -11,7 +11,7 @@ Controller-based APIs follow the traditional ASP.NET Core MVC pattern, where rou
 
 This section demonstrates how to configure Swashbuckle in a project that uses a controller-based API, and how to document endpoints using the [API guidelines](https://gitlab.prod.sgre.one/devsecops/api-governance/api-guidelines).
 
-We will beggin by giving an overview of the repository that accompanies this section, [ControllerBasedRestApi](**ADD LINK**).
+We will beggin by giving an overview of the repository that accompanies this section, [rest-apis](**ADD LINK**).
 We recommend that you read these sections, as they will help you better understand what we ask of you later on, when we refer you to the repository get the code to add to your own repository.
 However, if you wish to proceed immediately to [setting up Swashbuckle](ControllerBasedApi/setupSwashbuckleInController.md#setup-and-run-swashbuckle) in your repository, you can do so, and later come back here for more detailed explanations.
 
@@ -45,9 +45,9 @@ Enabling Swagger UI in a project improves visibility, collaboration, and maintai
 
 Swagger UI transforms static API definitions into an interactive and easily navigable interface, improving both usability and long-term maintainability.
 
-### The *ControllerBasedRestApi* repository
+### The *rest-apis* repository
 
-The repository [ControllerBasedRestApi](**ADD LINK**) is an integral part of this tutorial. In it you can find a working example of a C# repository taking advantage of Swashbuckle to generate API documentation.
+The repository [rest-apis](**ADD LINK**) is an integral part of this tutorial. In it you can find a working example of a C# repository taking advantage of Swashbuckle to generate API documentation.
 It is a very simple example, with the single purpose of exemplifying how to use the documentation generation tool.
 In it you will find the following components relevant for the API documentation:
 
