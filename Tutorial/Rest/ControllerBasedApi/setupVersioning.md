@@ -3,9 +3,9 @@
 # Setup Guide: API Versioning
 
 > **⚠️ DEMONSTRATION PURPOSES ONLY**
-> 
+>
 > **The Asp.Versioning packages used in this guide are for DEMONSTRATION PURPOSES ONLY. This is NOT a mandatory requirement for controller-based APIs.**
-> 
+>
 > **This example shows how API versioning can be integrated and documented in OpenAPI specifications. You can choose any versioning strategy that fits your needs, use custom URL patterns, header-based versioning, or skip versioning entirely if not required for your use case.**
 
 This guide provides step-by-step instructions to configure API versioning in your controller-based ASP.NET Core API.

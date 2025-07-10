@@ -3,14 +3,12 @@
 # Setup Guide: Authentication
 
 > **⚠️ DEMONSTRATION PURPOSES ONLY**
-> 
+>
 > **The Duende IdentityServer implementation used in this guide is for DEMONSTRATION PURPOSES ONLY. This is NOT a mandatory requirement for controller-based APIs.**
-> 
+>
 > **You can choose any authentication solution that fits your needs.**
 
-## Install Packages
-
-## Step 1: Install Required Packages
+## Install Required Packages
 
 Install Duende IdentityServer and JWT Bearer authentication packages.
 

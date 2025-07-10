@@ -3,9 +3,9 @@
 # # Setup Guide: Rate Limiting
 
 > **⚠️ DEMONSTRATION PURPOSES ONLY**
-> 
+>
 > **The AspNetCoreRateLimit package used in this guide is for DEMONSTRATION PURPOSES ONLY. This is NOT a mandatory requirement for controller-based APIs.**
-> 
+>
 > **This example shows how rate limiting can be integrated and documented in OpenAPI specifications. You can choose any rate limiting solution that fits your needs.**
 
 This guide provides step-by-step instructions for configuring rate limiting in a controller-based ASP.NET Core API project.

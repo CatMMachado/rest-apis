@@ -17,17 +17,11 @@ This guide provides step-by-step instructions for configuring Swashbuckle in a c
     # Code annotations - required for controller-based APIs
     dotnet add package Swashbuckle.AspNetCore.Annotations
 
-    # Versioning
-    # Provides libraries and middleware for API versioning
-    dotnet add package Asp.Versioning.Http
-    # Extends API versioning support and integrates with API documentation tools like Swagger
-    dotnet add package Asp.Versioning.Mvc.ApiExplorer
-
     # OpenAPI/Swagger capabilities
     dotnet add package Microsoft.AspNetCore.OpenApi
     ```
 
-2. Verify that the packages have been added to your `<AppName>.csproj` file. 
+2. Verify that the packages have been added to your `<AppName>.csproj` file.
 
     *For reference, a complete example can be found in `MyApi/MyApi.csproj` in the repository.*
 
@@ -115,7 +109,7 @@ if (app.Environment.IsDevelopment())
 
 ## XML Comments Configuration
 
-To enable XML comments in the application, add the following configuration to the `PropertyGroup` section of the `<AppName>.csproj` file: 
+To enable XML comments in the application, add the following configuration to the `PropertyGroup` section of the `<AppName>.csproj` file:
 
 ```xml
 <PropertyGroup>

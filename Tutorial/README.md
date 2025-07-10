@@ -4,7 +4,7 @@
 
 In modern software development, keeping API documentation up-to-date and accessible is a crucial part of maintaining a high-quality developer experience.
 
-This tutorial is designed for .NET developers, with a specific focus on C# projects. It walks through how to document APIs across different architectures — REST, gRPC, and asynchronous messaging using brokers — with a consistent and maintainable approach.
+This tutorial is designed for .NET developers, with a specific focus on C# projects. It walks through how to document APIs across different architectures — REST, and asynchronous messaging using brokers — with a consistent and maintainable approach.
 
 The overall goal of this tutorial is to assist in the generation of standardized API documentation that can be published to a centralized developer portal, Backstage, streamlining internal discovery and consumption of APIs.
 
@@ -28,15 +28,14 @@ These are the API architectures considered in this tutorial, and what is detaile
 
 - For REST APIs, how to generate OpenAPI specifications with Swashbuckle
 - For asynchronous APIs using message brokers (e.g., RabbitMQ, Kafka), how to generate AsyncAPI specifications with Neuroglia
-- For gRPC APIs, (**TBD**)
 
 Additionally, you will learn how to publish your documents in Backstage, enabling discoverability across your organization.
 
 ## Next steps
 
-The next sections of this guide can be used independently, based on your needs: if you are working with REST APIs, just go to [REST APIs](RestApis.md#introduction), and when you are ready to share your API documentation, go to [Integration with Backstage](TBD). The same applies to message brokers and gRPC APIs.
+The next sections of this guide can be used independently, based on your needs: if you are working with REST APIs, just go to [REST APIs](RestApis.md#introduction), and when you are ready to share your API documentation, go to [Integration with Backstage](TBD). The same applies to APIs recurring to message brokers.
 
-For each architecture and tool pairing you have access to a repository with a working example. *This repository is an integral part of this guide*, since the actual code you need to add to your repository exists **only/mostly** in the repository. The tutorial walks you through the steps, provides explanations, and guides you on how to comply with the API guidelines, but directs you to the sections in the repository that you need to integrate in your code. The repository itself is standalone in the sense that it doesn't depend on the content provided by the tutorial, but is nonetheless enriched by it, since the more detailed explanations can be found in the tutorial.
+For each architecture and tool pairing you have access to a repository with a working example. *This repository is an integral part of this guide*, since the actual code you need to add to your repository exists mostly in the repository. The tutorial walks you through the steps, provides explanations, and guides you on how to comply with the API guidelines, but directs you to the sections in the repository that you need to integrate in your code. The repository itself is standalone in the sense that it doesn't depend on the content provided by the tutorial, but is nonetheless enriched by it, since the more detailed explanations can be found in the tutorial.
 
 In the sections regarding the architecture styles, after a more theoretical introduction, you will find 2 sections:
 
@@ -49,5 +48,4 @@ Depending on your next goal, go to one of these sections:
 
 - [REST APIs](Rest/RestApis.md#introduction)
 - [Asynchronous APIs and message brokers](Async/messageBrokers.md#introduction)
-- [gRPC APIs](TBD)
 - [Integration with Backstage](TBD)
