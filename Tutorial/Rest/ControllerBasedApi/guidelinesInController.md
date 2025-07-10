@@ -102,22 +102,64 @@ Swahbuckle creates both YAML and JSON files at run time, and you can control the
 
 The setup of authentication and authorization in your repository is outside of the scope of this guide. Here the focus is on the information that can be added to the specification.
 
---
-Swashbuckle doesn’t map [Authorize] → OpenAPI security automatically. In order for the security information to be added to the spec, an operation filter needs to be added.
-However, when testing the API in Swagger UI, the authorization required in the endpoint will still be enforced.
+For security information to be added to the API specification, it needs to be configured in Swashbuckle. In the [rest-apis](**ADD LINK**) repository, class `SwaggerServiceExtensions`, the method `ConfigureOAuth2Security` configures the Oauth2 security definition and requirements that will appear in the API documentation, and that will be applied to the endpoints when the API is tested in Swagger UI.
 
-**Falar dos campos que se adicionam e do que aparece na spec.**
+In the API specification file, these are the sections added:
 
---
-For the purpose of showing SWashbuckle's and OpenAPI's capabilities, (...) => útil para a secção do Pedro?
+```yaml
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:5001/connect/token
+          scopes:
+            api1: Access to My API
+            api1.internal: Internal API Access
+            api1.external: External API Access
+security:
+  - oauth2:
+      - api1
+      - api1.internal
+      - api1.external  
+```
+
+Bear in mind that this information needs to match your security implementation, and that it is required that you configure Swagger with your implementation details. That is the only way for Swashbuckle to know what the implementation is, to add it to the specification.
+
+This configuration results in the presence of an `Authorize` button, at the top of the page, which will contain the authorization information, including the available scopes for the users to interact with the API. This information is applicable to all endpoints.
+
+At the controller and endpoints level, you will use the attribute `Authorize` to identify that the specified authorization is required. At the writing of this tutorial, Swahsbuckle doesn't map this attribute to the OpenAPI specification, and for the security information to be added for each endpoint, an operation filer needs to be added. However, when testing the API in Swagger UI, the authorization required in the endpoint is still enforced (as this is a runtime behavior).
+
+In the region `API Protection` of the `DeviceController` there is an example of a `public` endpoint, identified by the `AllowAnonymous` attribute that allows the endpoint to be accessed without proper authorization, even being the API protected, and an example of a `private` endpoint, requiring a specific policy to be respected.
+As refered above, this information will not be reflected in the specification with the current implementation.
 
 #### External and internal APIs
+
+The management of what components of your API are visible to external clients of solely to internal clients, is done through the use of tags in your endpoints.
+
+In the example below it's visible the use of the tags `Internal` and `External` to clearly mark these endpoints:
+
+```csharp
+[HttpGet("analytics")]
+[Tags("Internal")]
+public IActionResult GetInternalAnalytics() {}
+
+[HttpGet("devices-summary")]
+[Tags("External")]
+public IActionResult GetExternalDevices() {}
+```
+
+Those tags are then used to filter the endpoints that will be added to the different API specifications, since the goal here is to be able to provide specifications tailored to the content your different clients have access to.
+This is shown in the [rest-apis](**ADD LINK**) repository, class `SwaggerServiceExtensions`, in the method `ConfigureApiDocInclusion`, where a predicate is set up to filter the endpoints to include in each API document, base on the tag they are annotated with.
+
+The tag is also considered when guaranteeing that all documentation files are visible on the Swagger UI, as is shown in `Program.cs`, in the `API Specification` part, where 2 files per version are made visible, one of them for the `internal` API.
 
 "These endpoints demonstrate different access levels using tags for documentation filtering"
 
 #### Request and response schemas
 
-- restrictions with respect to format, character or number range of parameters and properties ?? **add it here?**
+- restrictions with respect to format, character or number range of parameters and properties
 - examples for all parameters and request/response bodies
 
 #### Error responses
@@ -139,7 +181,7 @@ For the purpose of showing SWashbuckle's and OpenAPI's capabilities, (...) => ú
 #### Deprecation notes
 
 Explain that by using the attribute `Obsolete`, the endpoint is marked as `deprecated`.
-The information on alternative endpoit to use needs tto be added as a commment, or in the summary field.
+The information on alternative endpoit to use needs to be added as a commment, or in the summary field.
 
 #### Service plans and quotas
 

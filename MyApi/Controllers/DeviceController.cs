@@ -93,36 +93,6 @@ public class DeviceController : ControllerBase
 
     #endregion API Versioning
 
-    #region Header Details
-
-    /// <summary>
-    /// Retrieves a sample resource with custom headers.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint demonstrates how custom headers appear in Swagger documentation.
-    /// </remarks>
-    /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
-    /// <returns>A sample response string.</returns>
-    [HttpGet("custom-header")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get with custom header",
-        Description = "Returns a message after receiving a custom header"
-    )]
-    public IActionResult GetWithCustomHeader(
-        [FromHeader(Name = "X-Custom-Header")]
-        [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
-        string xCustomHeader
-    )
-    {
-        var result = _deviceService.ProcessCustomHeader(xCustomHeader);
-        return Ok(new { message = result });
-    }
-
-    #endregion Header Details
-
     #region API Protection
 
     /// <summary>
@@ -163,8 +133,95 @@ public class DeviceController : ControllerBase
         var response = _deviceService.GetPrivateDevices(username);
         return Ok(response);
     }
-    
+
     #endregion API Protection
+    
+        #region External and Internal APIs
+
+    /// <summary>
+    /// Get device analytics data (Internal API only).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is restricted to internal systems and provides detailed analytics data
+    /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
+    /// </remarks>
+    /// <returns>Detailed device analytics and system metrics.</returns>
+    /// <response code="200">Returns analytics data.</response>
+    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
+    /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
+    [HttpGet("analytics")]
+    [Tags("Internal")]
+    [Authorize(Policy = "ApiScope")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [Produces("application/json")]
+    [SwaggerOperation(
+        Summary = "Get internal device analytics (Internal API)",
+        Description = "Restricted endpoint that provides detailed device analytics for internal systems only."
+    )]
+    public IActionResult GetInternalAnalytics()
+    {
+        return Ok(null);
+    }
+
+    /// <summary>
+    /// Get device summary (External API).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is available to external clients and provides a clean, 
+    /// public-facing device data without sensitive internal information.
+    /// Uses "External" tag for documentation filtering.
+    /// </remarks>
+    /// <returns>Public device data suitable for external consumption.</returns>
+    /// <response code="200">Returns public device data.</response>
+    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
+    [HttpGet("devices-summary")]
+    [Tags("External")]
+    [Authorize(Policy = "ApiScope")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Produces("application/json")]
+    [SwaggerOperation(
+        Summary = "Get public devices (External API)",
+        Description = "Public endpoint that provides device data for external clients and third-party integrations."
+    )]
+    public IActionResult GetExternalDevices()
+    {
+        return Ok(null);
+    }
+
+    #endregion External and Internal APIs
+
+    #region Header Details
+
+    /// <summary>
+    /// Retrieves a sample resource with custom headers.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint demonstrates how custom headers appear in Swagger documentation.
+    /// </remarks>
+    /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
+    /// <returns>A sample response string.</returns>
+    [HttpGet("custom-header")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+    [Produces("application/json")]
+    [SwaggerOperation(
+        Summary = "Get with custom header",
+        Description = "Returns a message after receiving a custom header"
+    )]
+    public IActionResult GetWithCustomHeader(
+        [FromHeader(Name = "X-Custom-Header")]
+        [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
+        string xCustomHeader
+    )
+    {
+        var result = _deviceService.ProcessCustomHeader(xCustomHeader);
+        return Ok(new { message = result });
+    }
+
+    #endregion Header Details
 
     #region Deprecation Notes
 
@@ -231,7 +288,7 @@ public class DeviceController : ControllerBase
     /// <param name="status">The status of the device (0=Offline, 1=Online).</param>
     /// <returns>The generated device with additional details.</returns>
     [HttpPost("with-params")]
-    [Authorize(Policy = "ApiScope")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -269,6 +326,7 @@ public class DeviceController : ControllerBase
     /// <response code="400">Bad request - The date format is invalid.</response>
     /// <response code="404">Not found - The device with the specified ID and date does not exist.</response>
     [HttpDelete("{id:int}/{date:datetime}")]
+    [AllowAnonymous]    
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -302,61 +360,4 @@ public class DeviceController : ControllerBase
     }
 
     #endregion Path Parameter Restrictions and Default Values
-
-    #region External and Internal APIs
-
-    /// <summary>
-    /// Get device analytics data (Internal API only).
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is restricted to internal systems and provides detailed analytics data
-    /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
-    /// </remarks>
-    /// <returns>Detailed device analytics and system metrics.</returns>
-    /// <response code="200">Returns analytics data.</response>
-    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
-    [HttpGet("analytics")]
-    [Tags("Internal")]
-    [Authorize(Policy = "ApiScope")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get internal device analytics (Internal API)",
-        Description = "Restricted endpoint that provides detailed device analytics for internal systems only."
-    )]
-    public IActionResult GetInternalAnalytics()
-    {
-        return Ok(null);
-    }
-
-    /// <summary>
-    /// Get device summary (External API).
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is available to external clients and provides a clean, 
-    /// public-facing device data without sensitive internal information.
-    /// Uses "External" tag for documentation filtering.
-    /// </remarks>
-    /// <returns>Public device data suitable for external consumption.</returns>
-    /// <response code="200">Returns public device data.</response>
-    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    [HttpGet("devices-summary")]
-    [Tags("External")]
-    [Authorize(Policy = "ApiScope")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get public devices (External API)",
-        Description = "Public endpoint that provides device data for external clients and third-party integrations."
-    )]
-    public IActionResult GetExternalDevices()
-    {
-        return Ok(null);
-    }
-
-    #endregion External and Internal APIs
 }

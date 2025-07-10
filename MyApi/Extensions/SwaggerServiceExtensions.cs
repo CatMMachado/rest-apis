@@ -61,7 +61,7 @@ public static class SwaggerServiceExtensions
         }
     }
 
-        private static void ConfigureApiDocInclusion(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
+    private static void ConfigureApiDocInclusion(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
     {
         // Predicate to control which endpoints are added to different specification documents
         options.DocInclusionPredicate((docName, apiDesc) =>
@@ -107,7 +107,7 @@ public static class SwaggerServiceExtensions
         options.IncludeXmlComments(xmlPath);
     }
 
-    
+
     private static void ConfigureOAuth2Security(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
     {
         // Configure OAuth2 security for the API document and Swagger UI
@@ -117,12 +117,16 @@ public static class SwaggerServiceExtensions
             Type = SecuritySchemeType.OAuth2,
             Flows = new OpenApiOAuthFlows
             {
+                // Configure the OAuth2 client credentials flow
                 ClientCredentials = new OpenApiOAuthFlow
                 {
+
                     TokenUrl = new Uri("http://localhost:5001/connect/token"),
                     Scopes = new Dictionary<string, string>
                     {
-                        { "api1", "Access to My API" }
+                        { "api1", "Access to My API" },
+                        { "api1.internal", "Internal API Access" },
+                        { "api1.external", "External API Access" }
                     }
                 }
             }
@@ -140,7 +144,7 @@ public static class SwaggerServiceExtensions
                         Id = "oauth2"
                     }
                 },
-                new[] { "api1" }
+                new[] { "api1", "api1.internal", "api1.external" }
             }
         });
     }

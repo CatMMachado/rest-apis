@@ -4,6 +4,24 @@ info:
   description: External API - Version 1.0
   version: '1.0'
 paths:
+  /v1/device/v1-only:
+    get:
+      tags:
+        - Device
+      summary: Get device.
+      description: "This endpoint is only available in API version 1.0.\r\nIt demonstrates a feature that exists only in the first version of the API."
+      responses:
+        '200':
+          description: Returns the V1 device data.
+  /v1/device/summary:
+    get:
+      tags:
+        - Device
+      summary: Get device summary (Available in both V1 and V2).
+      description: This endpoint is available in both API versions to exemplify adding an endpoint to multiple API versions.
+      responses:
+        '200':
+          description: Returns device summary data.
   /v1/device/custom-header:
     get:
       tags:
@@ -181,24 +199,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /v1/device/v1-only:
-    get:
-      tags:
-        - Device
-      summary: Get device.
-      description: "This endpoint is only available in API version 1.0.\r\nIt demonstrates a feature that exists only in the first version of the API."
-      responses:
-        '200':
-          description: Returns the V1 device data.
-  /v1/device/summary:
-    get:
-      tags:
-        - Device
-      summary: Get device summary (Available in both V1 and V2).
-      description: This endpoint is available in both API versions to exemplify adding an endpoint to multiple API versions.
-      responses:
-        '200':
-          description: Returns device summary data.
   /v1/device/limited:
     get:
       tags:
@@ -604,6 +604,10 @@ components:
           tokenUrl: http://localhost:5001/connect/token
           scopes:
             api1: Access to My API
+            api1.internal: Internal API Access
+            api1.external: External API Access
 security:
   - oauth2:
       - api1
+      - api1.internal
+      - api1.external

@@ -50,7 +50,10 @@ public static class AuthorizationServiceExtensions
             options.AddPolicy("ApiScope", policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "api1");
+                policy.RequireAssertion(context =>
+                context.User.HasClaim("scope", "api1") ||
+                context.User.HasClaim("scope", "api1.internal") ||
+                context.User.HasClaim("scope", "api1.external"));
             });
         });
         return services;
