@@ -12,8 +12,8 @@ namespace MyApi.Controllers;
 /// <summary>
 /// Controller for device operations.
 /// </summary>
-[Authorize(Policy = "ApiScope")]
 [ApiController]
+[Authorize(Policy = "ApiScope")]
 [Route("v{version:apiVersion}/device")]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
@@ -29,6 +29,69 @@ public class DeviceController : ControllerBase
     {
         _deviceService = deviceService;
     }
+
+    #region API Versioning
+
+    /// <summary>
+    /// Get device.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is only available in API version 1.0.
+    /// It demonstrates a feature that exists only in the first version of the API.
+    /// </remarks>
+    /// <returns>A simple device response for V1.</returns>
+    /// <response code="200">Returns the V1 device data.</response>
+    [HttpGet("v1-only")]
+    [MapToApiVersion("1.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
+    public IActionResult GetDevicesV1Only()
+    {
+        var response = _deviceService.GetDevicesV1();
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get advanced device data.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is only available in API version 2.0.
+    /// It demonstrates new features and enhanced data structure available in V2.
+    /// </remarks>
+    /// <returns>An advanced device response for V2.</returns>
+    /// <response code="200">Returns the V2 advanced device data.</response>
+    [HttpGet("v2-only")]
+    [MapToApiVersion("2.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
+    public IActionResult GetDevicesV2Only()
+    {
+        var response = _deviceService.GetDevicesV2();
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get device summary (Available in both V1 and V2).
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is available in both API versions to exemplify adding an endpoint to multiple API versions.
+    /// </remarks>
+    /// <returns>Device summary data.</returns>
+    /// <response code="200">Returns device summary data.</response>
+    [HttpGet("summary")]
+    [MapToApiVersion("1.0")]
+    [MapToApiVersion("2.0")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces("application/json")]
+    public IActionResult GetDeviceSummary()
+    {
+        return Ok(_deviceService.GetDeviceSummary());
+    }
+
+    #endregion API Versioning
 
     #region Header Details
 
@@ -168,6 +231,7 @@ public class DeviceController : ControllerBase
     /// <param name="status">The status of the device (0=Offline, 1=Online).</param>
     /// <returns>The generated device with additional details.</returns>
     [HttpPost("with-params")]
+    [Authorize(Policy = "ApiScope")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -238,81 +302,6 @@ public class DeviceController : ControllerBase
     }
 
     #endregion Path Parameter Restrictions and Default Values
-
-    #region API Versioning
-
-    /// <summary>
-    /// Get device.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is only available in API version 1.0.
-    /// It demonstrates a feature that exists only in the first version of the API.
-    /// </remarks>
-    /// <returns>A simple device response for V1.</returns>
-    /// <response code="200">Returns the V1 device data.</response>
-    [HttpGet("v1-only")]
-    [MapToApiVersion("1.0")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get devices (V1 only)",
-        Description = "This endpoint is exclusive to API version 1.0 and returns basic device data."
-    )]
-    public IActionResult GetDevicesV1Only()
-    {
-        var response = _deviceService.GetDevicesV1();
-        return Ok(response);
-    }
-
-    /// <summary>
-    /// Get advanced device data.
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is only available in API version 2.0.
-    /// It demonstrates new features and enhanced data structure available in V2.
-    /// </remarks>
-    /// <returns>An advanced device response for V2.</returns>
-    /// <response code="200">Returns the V2 advanced device data.</response>
-    [HttpGet("v2-only")]
-    [MapToApiVersion("2.0")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get advanced devices (V2 only)",
-        Description = "This endpoint is exclusive to API version 2.0 and returns enhanced device data with additional features."
-    )]
-    public IActionResult GetDevicesV2Only()
-    {
-        var response = _deviceService.GetDevicesV2();
-        return Ok(response);
-    }
-
-    /// <summary>
-    /// Get device summary (Available in both V1 and V2).
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is available in both API versions to exemplify adding an endpoint to multiple API versions.
-    /// </remarks>
-    /// <returns>Device summary data.</returns>
-    /// <response code="200">Returns device summary data.</response>
-    [HttpGet("summary")]
-    [MapToApiVersion("1.0")]
-    [MapToApiVersion("2.0")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get device summary (V1 and V2)",
-        Description = "This endpoint is available in both V1 and V2."
-    )]
-    public IActionResult GetDeviceSummary()
-    {
-        return Ok(_deviceService.GetDeviceSummary());
-    }
-
-    #endregion API Versioning
 
     #region External and Internal APIs
 

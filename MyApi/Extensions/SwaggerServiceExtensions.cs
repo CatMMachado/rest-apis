@@ -110,6 +110,8 @@ public static class SwaggerServiceExtensions
     
     private static void ConfigureOAuth2Security(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions options)
     {
+        // Configure OAuth2 security for the API document and Swagger UI
+        // This adds an OAuth2 security definition to the API document, allowing users to authenticate using OAuth2
         options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
             Type = SecuritySchemeType.OAuth2,
@@ -125,6 +127,8 @@ public static class SwaggerServiceExtensions
                 }
             }
         });
+        // Add security requirement to the API document
+        // This ensures that the OAuth2 security scheme is applied to all endpoints in the API document
         options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
