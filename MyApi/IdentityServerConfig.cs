@@ -77,6 +77,18 @@ public static class IdentityServerConfig
             new IdentityResources.OpenId(),
             new IdentityResources.Profile()
         };
+
+    /// <summary>
+    /// Gets the list of API resources that define the APIs available to clients.
+    /// </summary> 
+    public static IEnumerable<ApiResource> GetApiResources() =>
+        new List<ApiResource>
+        {
+            new ApiResource("api1", "My API")
+            {
+                Scopes = { "api1", "api1.internal", "api1.external" }
+            }
+        };
 }
 
 #endregion

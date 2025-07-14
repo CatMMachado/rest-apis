@@ -69,10 +69,23 @@ builder.Services.AddApiVersioning(options =>
 
 #endregion Versioning
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSwaggerUI", builder =>
+    {
+        builder.WithOrigins("http://localhost:5000")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
+
 #endregion Service Registration
 // Infrastructure code
 
 var app = builder.Build();
+
+app.UseCors("AllowSwaggerUI");
 
 #region Middleware Configuration
 // Infrastructure code and API specification code

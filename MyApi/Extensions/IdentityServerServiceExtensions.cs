@@ -18,6 +18,7 @@ public static class IdentityServerServiceExtensions
             .AddInMemoryClients(IdentityServerConfig.GetClients())
             .AddInMemoryApiScopes(IdentityServerConfig.GetApiScopes())
             .AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
+            .AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
             .AddDeveloperSigningCredential();
         return services;
     }
