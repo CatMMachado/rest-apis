@@ -117,9 +117,14 @@ if (app.Environment.IsDevelopment())
         }
 
         // OAuth2 configuration for Swagger UI, allowing users to authenticate in the UI
-        options.OAuthClientId("auth-client-id");
-        options.OAuthClientSecret("your-client-secret");
+        // Using the swagger testing client that has access to all scopes for development/testing
+        options.OAuthClientId("swagger-ui-client");
+        options.OAuthClientSecret("swagger-ui-secret");
         options.OAuthUsePkce();
+        
+        // Configure OAuth2 additional settings
+        options.OAuthAppName("Device Management API - Swagger UI");
+        options.OAuthScopeSeparator(" ");
     });
 }
 

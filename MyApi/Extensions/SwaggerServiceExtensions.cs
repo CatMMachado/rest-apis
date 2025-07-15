@@ -124,9 +124,10 @@ public static class SwaggerServiceExtensions
                     TokenUrl = new Uri("http://localhost:5001/connect/token"),
                     Scopes = new Dictionary<string, string>
                     {
-                        { "api1", "Access to My API" },
-                        { "api1.internal", "Internal API Access" },
-                        { "api1.external", "External API Access" }
+                        { "devices.read", "Read access to the Devices Management API" },
+                        { "devices.write", "Write access to the Devices Management API" },
+                        { "devices.internal", "Internal API Access" },
+                        { "devices.external", "External API Access" }
                     }
                 }
             }
@@ -144,7 +145,7 @@ public static class SwaggerServiceExtensions
                         Id = "oauth2"
                     }
                 },
-                new[] { "api1", "api1.internal", "api1.external" }
+                new[] { "devices.read", "devices.write", "devices.internal", "devices.external" }
             }
         });
     }

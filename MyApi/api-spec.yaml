@@ -22,25 +22,6 @@ paths:
       responses:
         '200':
           description: Returns device summary data.
-  /v1/device/custom-header:
-    get:
-      tags:
-        - Device
-      summary: Retrieves a sample resource with custom headers.
-      description: This endpoint demonstrates how custom headers appear in Swagger documentation.
-      parameters:
-        - name: X-Custom-Header
-          in: header
-          description: A custom header for demonstration purposes.
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { }
   /v1/device/public:
     get:
       tags:
@@ -59,7 +40,7 @@ paths:
       tags:
         - Device
       summary: Get private devices.
-      description: This endpoint is protected and requires a valid token with the "api1" scope.
+      description: This endpoint is protected and requires a valid token with the "ApiScope" policy.
       responses:
         '200':
           description: Returns the list of devices and user details.
@@ -68,6 +49,73 @@ paths:
               schema: { }
         '401':
           description: Unauthorized if the token is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /v1/device/internal/management:
+    get:
+      tags:
+        - Device
+      summary: Get internal device management data (Internal API only).
+      description: "This endpoint provides sensitive internal device management information\r\nand is only accessible to clients with internal scope."
+      responses:
+        '200':
+          description: Returns internal device data.
+        '403':
+          description: Forbidden - Client doesn't have internal access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /v1/device/external/partner-data:
+    get:
+      tags:
+        - Device
+      summary: Get external partner device data (External API only).
+      description: "This endpoint provides device information formatted for external partners\r\nand is only accessible to clients with external scope."
+      responses:
+        '200':
+          description: Returns external device data.
+        '403':
+          description: Forbidden - Client doesn't have external access.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/v1/device/internal/{deviceId}/config':
+    put:
+      tags:
+        - Device
+      summary: Update device configuration (Internal write access required).
+      description: "This endpoint allows updating device configuration and requires both\r\ninternal scope and write permissions."
+      parameters:
+        - name: deviceId
+          in: path
+          description: The ID of the device to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The new device configuration.
+        content:
+          application/json:
+            schema: { }
+          text/json:
+            schema: { }
+          application/*+json:
+            schema: { }
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
           content:
             application/json:
               schema:
@@ -210,21 +258,6 @@ paths:
           description: OK
         '429':
           description: Too Many Requests
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-  /v1/device/devices-summary:
-    get:
-      tags:
-        - External
-      summary: Get device summary (External API).
-      description: "This endpoint is available to external clients and provides a clean, \r\npublic-facing device data without sensitive internal information.\r\nUses \"External\" tag for documentation filtering."
-      responses:
-        '200':
-          description: Returns public device data.
-        '401':
-          description: Unauthorized if the token is missing or invalid.
           content:
             application/json:
               schema:
@@ -603,11 +636,13 @@ components:
         clientCredentials:
           tokenUrl: http://localhost:5001/connect/token
           scopes:
-            api1: Access to My API
-            api1.internal: Internal API Access
-            api1.external: External API Access
+            devices.read: Read access to the Devices Management API
+            devices.write: Write access to the Devices Management API
+            devices.internal: Internal API Access
+            devices.external: External API Access
 security:
   - oauth2:
-      - api1
-      - api1.internal
-      - api1.external
+      - devices.read
+      - devices.write
+      - devices.internal
+      - devices.external

@@ -26,7 +26,7 @@ public static class AuthorizationServiceExtensions
             .AddJwtBearer(options =>
             {
                 options.Authority = "http://localhost:5001";
-                options.Audience = "api1";
+                options.Audience = "device-management-api";
                 options.RequireHttpsMetadata = false;
             });
         return services;
@@ -39,21 +39,59 @@ public static class AuthorizationServiceExtensions
     /// <param name="services"> The service collection to add services to.</param>
     /// <returns> The updated service collection with authorization policies configured.</returns>
     /// <remarks>
-    /// This method adds a policy named "ApiScope" that requires users to be authenticated
-    /// and have a claim with the scope "api1". This is used to protect API
-    /// endpoints that require access to the API resources.
-    /// </remarks>
+    /// This method defines several authorization policies:
+    /// - "ApiScope": Requires authenticated users with the "devices.read", "devices.write", "devices.internal", or "devices.external" scopes.
+    /// - "InternalOnly": Requires authenticated users with the "devices.internal" scope.
+    /// - "ExternalOnly": Requires authenticated users with the "devices.external" scope.
+    /// - "ReadAccess": Requires authenticated users with the "devices.read" scope.
+    /// - "WriteAccess": Requires authenticated users with the "devices.write" scope.
+   /// These policies are used to secure API endpoints and ensure that only authorized users can access them.
+   /// </remarks>   
     public static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
+            // General API scope policy
             options.AddPolicy("ApiScope", policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireAssertion(context =>
-                context.User.HasClaim("scope", "api1") ||
-                context.User.HasClaim("scope", "api1.internal") ||
-                context.User.HasClaim("scope", "api1.external"));
+                    context.User.HasClaim("scope", "devices.read") ||
+                    context.User.HasClaim("scope", "devices.write") ||
+                    context.User.HasClaim("scope", "devices.internal") ||
+                    context.User.HasClaim("scope", "devices.external"));
+            });
+
+            // Internal-only endpoints policy
+            options.AddPolicy("InternalOnly", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("scope", "devices.internal"));
+            });
+
+            // External-only endpoints policy
+            options.AddPolicy("ExternalOnly", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("scope", "devices.external"));
+            });
+
+            // Read access policy
+            options.AddPolicy("ReadAccess", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("scope", "devices.read"));
+            });
+
+            // Write access policy
+            options.AddPolicy("WriteAccess", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("scope", "devices.write"));
             });
         });
         return services;

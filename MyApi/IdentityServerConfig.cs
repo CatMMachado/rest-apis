@@ -16,42 +16,21 @@ public static class IdentityServerConfig
     public static IEnumerable<Client> GetClients() =>
         new List<Client>
         {
-            // Internal client with access to internal APIs
+            // Swagger UI testing client with access to all scopes for development
             new Client
             {
-                ClientId = "internal-client-id",
+                ClientId = "swagger-ui-client",
+                ClientName = "Swagger UI Test Client",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets =
                 {
-                    new Secret("internal-client-secret".Sha256())
+                    new Secret("swagger-ui-secret".Sha256())
                 },
-                AllowedScopes = { "api1", "api1.internal" },
+                AllowedScopes = { "devices.read", "devices.write", "devices.internal", "devices.external" },
                 Claims = new List<ClientClaim>
                 {
-                    new ClientClaim("client_type", "internal")
+                    new ClientClaim("client_type", "swagger_test")
                 }
-            },
-            // External client with access to external APIs only
-            new Client
-            {
-                ClientId = "external-client-id",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets =
-                {
-                    new Secret("external-client-secret".Sha256())
-                },
-                AllowedScopes = { "api1", "api1.external" }
-            },
-            // General client for backward compatibility
-            new Client
-            {
-                ClientId = "auth-client-id",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets =
-                {
-                    new Secret("your-client-secret".Sha256())
-                },
-                AllowedScopes = { "api1" }
             }
         };
 
@@ -62,9 +41,10 @@ public static class IdentityServerConfig
     public static IEnumerable<ApiScope> GetApiScopes() =>
         new List<ApiScope>
         {
-            new ApiScope("api1", "General API Access"),
-            new ApiScope("api1.internal", "Internal API Access"),
-            new ApiScope("api1.external", "External API Access")
+            new ApiScope("devices.read", "Read access to the Device Management API"),
+            new ApiScope("devices.write", "Write access to the Device Management API"),
+            new ApiScope("devices.internal", "Internal API Access"),
+            new ApiScope("devices.external", "External API Access")
         };
 
     /// <summary>
@@ -84,9 +64,9 @@ public static class IdentityServerConfig
     public static IEnumerable<ApiResource> GetApiResources() =>
         new List<ApiResource>
         {
-            new ApiResource("api1", "My API")
+            new ApiResource("device-management-api", "The device management API")
             {
-                Scopes = { "api1", "api1.internal", "api1.external" }
+                Scopes = { "devices.read", "devices.write", "devices.internal", "devices.external" }
             }
         };
 }

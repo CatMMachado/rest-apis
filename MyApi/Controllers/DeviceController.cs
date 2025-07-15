@@ -43,7 +43,7 @@ public class DeviceController : ControllerBase
     /// <response code="200">Returns the V1 device data.</response>
     [HttpGet("v1-only")]
     [MapToApiVersion("1.0")]
-    [AllowAnonymous]
+    [Authorize(Policy = "ReadAccess")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Produces("application/json")]
     public IActionResult GetDevicesV1Only()
@@ -63,7 +63,7 @@ public class DeviceController : ControllerBase
     /// <response code="200">Returns the V2 advanced device data.</response>
     [HttpGet("v2-only")]
     [MapToApiVersion("2.0")]
-    [AllowAnonymous]
+    [Authorize(Policy = "ReadAccess")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Produces("application/json")]
     public IActionResult GetDevicesV2Only()
@@ -83,7 +83,7 @@ public class DeviceController : ControllerBase
     [HttpGet("summary")]
     [MapToApiVersion("1.0")]
     [MapToApiVersion("2.0")]
-    [AllowAnonymous]
+    [Authorize(Policy = "ReadAccess")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Produces("application/json")]
     public IActionResult GetDeviceSummary()
@@ -117,7 +117,7 @@ public class DeviceController : ControllerBase
     /// Get private devices.
     /// </summary>
     /// <remarks>
-    /// This endpoint is protected and requires a valid token with the "api1" scope.
+    /// This endpoint is protected and requires a valid token with the "ApiScope" policy.
     /// </remarks>
     /// <returns>A list of devices along with user information.</returns>
     /// <response code="200">Returns the list of devices and user details.</response>
@@ -135,93 +135,96 @@ public class DeviceController : ControllerBase
     }
 
     #endregion API Protection
-    
-        #region External and Internal APIs
+
+    #region Internal vs External Endpoint Examples
 
     /// <summary>
-    /// Get device analytics data (Internal API only).
+    /// Get internal device management data (Internal API only).
     /// </summary>
     /// <remarks>
-    /// This endpoint is restricted to internal systems and provides detailed analytics data
-    /// that should not be exposed to external clients. Uses "Internal" tag for documentation filtering.
+    /// This endpoint provides sensitive internal device management information
+    /// and is only accessible to clients with internal scope.
     /// </remarks>
-    /// <returns>Detailed device analytics and system metrics.</returns>
-    /// <response code="200">Returns analytics data.</response>
-    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    /// <response code="403">Forbidden if the client lacks appropriate access privileges.</response>
-    [HttpGet("analytics")]
-    [Tags("Internal")]
-    [Authorize(Policy = "ApiScope")]
+    /// <returns>Internal device management data.</returns>
+    /// <response code="200">Returns internal device data.</response>
+    /// <response code="403">Forbidden - Client doesn't have internal access.</response>
+    [HttpGet("internal/management")]
+    [Authorize(Policy = "InternalOnly")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get internal device analytics (Internal API)",
-        Description = "Restricted endpoint that provides detailed device analytics for internal systems only."
-    )]
-    public IActionResult GetInternalAnalytics()
+    public IActionResult GetInternalDeviceManagement()
     {
-        return Ok(null);
+        return Ok(new
+        {
+            message = "This is internal device management data",
+            internalDevices = _deviceService.GetDevices().Take(5), // Using existing method
+            systemMetrics = new
+            {
+                totalDevices = 1250,
+                activeConnections = 342,
+                systemLoad = "65%"
+            }
+        });
     }
 
     /// <summary>
-    /// Get device summary (External API).
+    /// Get external partner device data (External API only).
     /// </summary>
     /// <remarks>
-    /// This endpoint is available to external clients and provides a clean, 
-    /// public-facing device data without sensitive internal information.
-    /// Uses "External" tag for documentation filtering.
+    /// This endpoint provides device information formatted for external partners
+    /// and is only accessible to clients with external scope.
     /// </remarks>
-    /// <returns>Public device data suitable for external consumption.</returns>
-    /// <response code="200">Returns public device data.</response>
-    /// <response code="401">Unauthorized if the token is missing or invalid.</response>
-    [HttpGet("devices-summary")]
-    [Tags("External")]
-    [Authorize(Policy = "ApiScope")]
+    /// <returns>External partner device data.</returns>
+    /// <response code="200">Returns external device data.</response>
+    /// <response code="403">Forbidden - Client doesn't have external access.</response>
+    [HttpGet("external/partner-data")]
+    [Authorize(Policy = "ExternalOnly")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get public devices (External API)",
-        Description = "Public endpoint that provides device data for external clients and third-party integrations."
-    )]
-    public IActionResult GetExternalDevices()
+    public IActionResult GetExternalPartnerData()
     {
-        return Ok(null);
+        return Ok(new
+        {
+            message = "This is external partner device data",
+            publicDevices = _deviceService.GetPublicDevices(),
+            partnerInfo = new
+            {
+                apiVersion = "1.0",
+                supportContact = "partners@company.com"
+            }
+        });
     }
-
-    #endregion External and Internal APIs
-
-    #region Header Details
 
     /// <summary>
-    /// Retrieves a sample resource with custom headers.
+    /// Update device configuration (Internal write access required).
     /// </summary>
     /// <remarks>
-    /// This endpoint demonstrates how custom headers appear in Swagger documentation.
+    /// This endpoint allows updating device configuration and requires both
+    /// internal scope and write permissions.
     /// </remarks>
-    /// <param name="xCustomHeader">A custom header for demonstration purposes.</param>
-    /// <returns>A sample response string.</returns>
-    [HttpGet("custom-header")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+    /// <param name="deviceId">The ID of the device to update.</param>
+    /// <param name="config">The new device configuration.</param>
+    /// <returns>Updated device information.</returns>
+    [HttpPut("internal/{deviceId}/config")]
+    [Authorize(Policy = "InternalOnly")]
+    [Authorize(Policy = "WriteAccess")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
-    [SwaggerOperation(
-        Summary = "Get with custom header",
-        Description = "Returns a message after receiving a custom header"
-    )]
-    public IActionResult GetWithCustomHeader(
-        [FromHeader(Name = "X-Custom-Header")]
-        [SwaggerParameter("Custom header value to be passed in the request", Required = true)]
-        string xCustomHeader
-    )
+    public IActionResult UpdateInternalDeviceConfig(string deviceId, [FromBody] object config)
     {
-        var result = _deviceService.ProcessCustomHeader(xCustomHeader);
-        return Ok(new { message = result });
+        return Ok(new
+        {
+            message = $"Device {deviceId} configuration updated",
+            deviceId,
+            updatedAt = DateTime.UtcNow
+        });
     }
 
-    #endregion Header Details
+    #endregion Internal vs External Endpoint Examples
 
     #region Deprecation Notes
 
@@ -248,7 +251,7 @@ public class DeviceController : ControllerBase
     #endregion Deprecation Notes
 
     #region Request Body and Response Schemas
-    
+
     /// <summary>
     /// Create a custom device.
     /// </summary>
